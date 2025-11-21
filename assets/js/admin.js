@@ -416,6 +416,244 @@
         });
     }
 
+    function renderRUMFIDChart(data) {
+        const ctx = document.getElementById('rum-fid-chart');
+        if (!ctx) return;
+
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚡</div><p>No RUM data yet. Metrics will appear as users visit your site!</p></div>';
+            return;
+        }
+
+        const labels = data.map(item => item.date);
+        const avgFID = data.map(item => parseFloat(item.avg_fid) || 0);
+        const p75FID = data.map(item => parseFloat(item.p75_fid) || 0);
+        const latestP75 = p75FID[p75FID.length - 1] || avgFID[avgFID.length - 1] || 0;
+
+        const statusObj = latestP75 < 100 ? { status: 'good', text: 'Good' } : latestP75 < 300 ? { status: 'warning', text: 'Needs Improvement' } : { status: 'bad', text: 'Poor' };
+        renderStatusBadge('rum-fid-status', statusObj);
+
+        const recommendations = [];
+        if (latestP75 > 300) {
+            recommendations.push('FID is critical - users experience significant delay');
+            recommendations.push('Break up long tasks with code splitting');
+            recommendations.push('Optimize JavaScript execution');
+        } else if (latestP75 > 100) {
+            recommendations.push('Reduce JavaScript execution time');
+            recommendations.push('Use web workers for heavy computations');
+        }
+        renderRecommendations('rum-fid-recommendations', recommendations);
+
+        const gradient1 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+        gradient1.addColorStop(0, 'rgba(0, 123, 255, 0.15)');
+        gradient1.addColorStop(1, 'rgba(0, 123, 255, 0.02)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Avg FID (ms)',
+                    data: avgFID,
+                    borderColor: '#007BFF',
+                    backgroundColor: gradient1,
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'P75 FID (ms)',
+                    data: p75FID,
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderRUMFCPChart(data) {
+        const ctx = document.getElementById('rum-fcp-chart');
+        if (!ctx) return;
+
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚀</div><p>No RUM data yet. Metrics will appear as users visit your site!</p></div>';
+            return;
+        }
+
+        const labels = data.map(item => item.date);
+        const avgFCP = data.map(item => parseFloat(item.avg_fcp) || 0);
+        const p75FCP = data.map(item => parseFloat(item.p75_fcp) || 0);
+        const latestP75 = p75FCP[p75FCP.length - 1] || avgFCP[avgFCP.length - 1] || 0;
+
+        const statusObj = latestP75 < 1800 ? { status: 'good', text: 'Good' } : latestP75 < 3000 ? { status: 'warning', text: 'Needs Improvement' } : { status: 'bad', text: 'Poor' };
+        renderStatusBadge('rum-fcp-status', statusObj);
+
+        const recommendations = [];
+        if (latestP75 > 3000) {
+            recommendations.push('FCP is critical - first content takes too long');
+            recommendations.push('Optimize server response time');
+            recommendations.push('Minimize render-blocking resources');
+        } else if (latestP75 > 1800) {
+            recommendations.push('Improve server response time');
+            recommendations.push('Optimize critical rendering path');
+        }
+        renderRecommendations('rum-fcp-recommendations', recommendations);
+
+        const gradient1 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+        gradient1.addColorStop(0, 'rgba(0, 123, 255, 0.15)');
+        gradient1.addColorStop(1, 'rgba(0, 123, 255, 0.02)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Avg FCP (ms)',
+                    data: avgFCP,
+                    borderColor: '#007BFF',
+                    backgroundColor: gradient1,
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'P75 FCP (ms)',
+                    data: p75FCP,
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderRUMTTFBChart(data) {
+        const ctx = document.getElementById('rum-ttfb-chart');
+        if (!ctx) return;
+
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⏱️</div><p>No RUM data yet. Metrics will appear as users visit your site!</p></div>';
+            return;
+        }
+
+        const labels = data.map(item => item.date);
+        const avgTTFB = data.map(item => parseFloat(item.avg_ttfb) || 0);
+        const p75TTFB = data.map(item => parseFloat(item.p75_ttfb) || 0);
+        const latestP75 = p75TTFB[p75TTFB.length - 1] || avgTTFB[avgTTFB.length - 1] || 0;
+
+        const statusObj = latestP75 < 800 ? { status: 'good', text: 'Good' } : latestP75 < 1800 ? { status: 'warning', text: 'Needs Improvement' } : { status: 'bad', text: 'Poor' };
+        renderStatusBadge('rum-ttfb-status', statusObj);
+
+        const recommendations = [];
+        if (latestP75 > 1800) {
+            recommendations.push('TTFB is critical - server response is too slow');
+            recommendations.push('Optimize server performance');
+            recommendations.push('Use a CDN');
+            recommendations.push('Enable caching');
+        } else if (latestP75 > 800) {
+            recommendations.push('Improve server response time');
+            recommendations.push('Consider using a faster hosting provider');
+        }
+        renderRecommendations('rum-ttfb-recommendations', recommendations);
+
+        const gradient1 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+        gradient1.addColorStop(0, 'rgba(0, 123, 255, 0.15)');
+        gradient1.addColorStop(1, 'rgba(0, 123, 255, 0.02)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Avg TTFB (ms)',
+                    data: avgTTFB,
+                    borderColor: '#007BFF',
+                    backgroundColor: gradient1,
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'P75 TTFB (ms)',
+                    data: p75TTFB,
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     function renderRecentAuditsTable(data) {
         const container = document.getElementById('recent-audits-table');
         if (!container) return;
@@ -425,7 +663,7 @@
             return;
         }
 
-        let html = '<table><thead><tr><th>URL</th><th>Score</th><th>LCP</th><th>FID</th><th>CLS</th><th>Date</th></tr></thead><tbody>';
+        let html = '<table><thead><tr><th><input type="checkbox" id="select-all-checkbox" /></th><th>URL</th><th>Score</th><th>LCP</th><th>FID</th><th>CLS</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
 
         data.forEach(item => {
             const score = parseFloat(item.performance_score) || 0;
@@ -442,18 +680,88 @@
                 scoreBadge = '<span style="color: #94a3b8;">Pending</span>';
             }
 
-            html += '<tr>';
+            const statusBadge = item.status === 'completed' ? 
+                '<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">Completed</span>' :
+                item.status === 'pending' ?
+                '<span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">Pending</span>' :
+                item.status === 'processing' ?
+                '<span style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">Processing</span>' :
+                '<span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">' + escapeHtml(item.status) + '</span>';
+
+            html += '<tr data-audit-id="' + item.id + '">';
+            html += '<td><input type="checkbox" class="audit-checkbox" value="' + item.id + '" /></td>';
             html += '<td>' + escapeHtml(item.url) + '</td>';
             html += '<td>' + scoreBadge + '</td>';
             html += '<td>' + (item.largest_contentful_paint ? parseFloat(item.largest_contentful_paint).toFixed(0) + 'ms' : 'N/A') + '</td>';
             html += '<td>' + (item.total_blocking_time ? parseFloat(item.total_blocking_time).toFixed(0) + 'ms' : 'N/A') + '</td>';
             html += '<td>' + (item.cumulative_layout_shift ? parseFloat(item.cumulative_layout_shift).toFixed(3) : 'N/A') + '</td>';
+            html += '<td>' + statusBadge + '</td>';
             html += '<td>' + new Date(item.created_at).toLocaleString() + '</td>';
+            html += '<td><button class="button button-small view-audit-details" data-audit-id="' + item.id + '">View</button></td>';
             html += '</tr>';
         });
 
         html += '</tbody></table>';
         container.innerHTML = html;
+
+        // Attach event handlers
+        attachAuditTableHandlers();
+    }
+
+    function attachAuditTableHandlers() {
+        $('#select-all-checkbox, #select-all-audits').on('change', function() {
+            const checked = $(this).is(':checked');
+            $('.audit-checkbox').prop('checked', checked);
+            updateBulkActions();
+        });
+
+        $('.audit-checkbox').on('change', function() {
+            updateBulkActions();
+        });
+
+        $('#bulk-delete-btn').on('click', function() {
+            const selected = $('.audit-checkbox:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            if (selected.length === 0) {
+                alert('Please select audits to delete');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete ' + selected.length + ' audit(s)?')) {
+                return;
+            }
+
+            $.ajax({
+                url: PerfAuditPro.apiUrl + 'delete-audits',
+                method: 'POST',
+                data: JSON.stringify({ audit_ids: selected }),
+                contentType: 'application/json',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-WP-Nonce', PerfAuditPro.nonce);
+                },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    }
+                }
+            });
+        });
+
+        $('.view-audit-details').on('click', function() {
+            const auditId = $(this).data('audit-id');
+            window.location.href = '?page=perfaudit-pro&audit_id=' + auditId;
+        });
+    }
+
+    function updateBulkActions() {
+        const count = $('.audit-checkbox:checked').length;
+        if (count > 0) {
+            $('#bulk-delete-btn').show().text('Delete Selected (' + count + ')');
+        } else {
+            $('#bulk-delete-btn').hide();
+        }
     }
 
     function escapeHtml(text) {
@@ -571,13 +879,14 @@
         $('#create-audit-form').on('submit', function(e) {
             e.preventDefault();
             const url = $('#audit-url').val();
+            const device = $('#audit-device').val() || 'desktop';
             const messageDiv = $('#create-audit-message');
             const submitBtn = $(this).find('button[type="submit"]');
 
             submitBtn.prop('disabled', true).text('Creating...');
             messageDiv.html('');
 
-            createAudit(url).done(function(response) {
+            createAudit(url, device).done(function(response) {
                 messageDiv.html('<div style="color: #00a32a; padding: 10px; background: #f0f6fc; border-left: 4px solid #00a32a; margin-top: 10px;">' +
                     'Audit created successfully! ID: ' + response.audit_id + '. ' +
                     'The built-in PHP worker will process this audit automatically when running.' +
@@ -601,30 +910,89 @@
             });
         });
         
-        $.when(fetchAuditResults(), fetchRUMMetrics()).done(function(auditResponse, rumResponse) {
-            console.log('PerfAudit Pro: API responses received', auditResponse, rumResponse);
+        function loadAuditData() {
+            const filters = {
+                status: $('#audit-filter-status').val(),
+                search: $('#audit-search').val(),
+                date_from: $('#audit-filter-date').val(),
+            };
+
+            $.ajax({
+                url: PerfAuditPro.apiUrl + 'audit-results',
+                method: 'GET',
+                data: filters,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-WP-Nonce', PerfAuditPro.nonce);
+                },
+                success: function(auditData) {
+                    renderAuditTimelineChart(auditData);
+                    renderScoreDistributionChart(auditData);
+                    renderRecentAuditsTable(auditData);
+                }
+            });
+        }
+
+        function loadRUMData() {
+            $.ajax({
+                url: PerfAuditPro.apiUrl + 'rum-metrics',
+                method: 'GET',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-WP-Nonce', PerfAuditPro.nonce);
+                },
+                success: function(rumData) {
+                    renderRUMLCPChart(rumData);
+                    renderRUMCLSChart(rumData);
+                    renderRUMFIDChart(rumData);
+                    renderRUMFCPChart(rumData);
+                    renderRUMTTFBChart(rumData);
+                }
+            });
+        }
+
+        // Load data
+        loadAuditData();
+        loadRUMData();
+
+        // Filter handlers
+        $('#audit-search, #audit-filter-status, #audit-filter-date').on('change keyup', function() {
+            clearTimeout(window.auditFilterTimeout);
+            window.auditFilterTimeout = setTimeout(loadAuditData, 500);
+        });
+
+        // Export handlers
+        $('#export-csv-btn').on('click', function() {
+            const filters = {
+                status: $('#audit-filter-status').val(),
+                search: $('#audit-search').val(),
+                date_from: $('#audit-filter-date').val(),
+            };
+            const params = new URLSearchParams(filters);
+            window.location.href = ajaxurl + '?action=perfaudit_export_csv&nonce=' + PerfAuditPro.workerNonce + '&' + params.toString();
+        });
+
+        $('#export-pdf-btn').on('click', function() {
+            const filters = {
+                status: $('#audit-filter-status').val(),
+                search: $('#audit-search').val(),
+                date_from: $('#audit-filter-date').val(),
+            };
+            const params = new URLSearchParams(filters);
+            window.location.href = ajaxurl + '?action=perfaudit_export_pdf&nonce=' + PerfAuditPro.workerNonce + '&' + params.toString();
+        });
+
+        $.when(fetchRUMMetrics()).done(function(rumResponse) {
+            console.log('PerfAudit Pro: RUM response received', rumResponse);
             
-            // jQuery $.when with $.ajax returns [data, textStatus, jqXHR]
-            // WordPress REST API returns JSON array directly
-            let auditData = [];
             let rumData = [];
-            
-            if (auditResponse && auditResponse.length > 0) {
-                auditData = Array.isArray(auditResponse[0]) ? auditResponse[0] : (auditResponse[0] || []);
-            }
-            
             if (rumResponse && rumResponse.length > 0) {
                 rumData = Array.isArray(rumResponse[0]) ? rumResponse[0] : (rumResponse[0] || []);
             }
 
-            console.log('PerfAudit Pro: Processed data', auditData, rumData);
-
-            // Always render charts, they'll show empty state if no data
-            renderAuditTimelineChart(auditData);
-            renderScoreDistributionChart(auditData);
-            renderRecentAuditsTable(auditData);
             renderRUMLCPChart(rumData);
             renderRUMCLSChart(rumData);
+            renderRUMFIDChart(rumData);
+            renderRUMFCPChart(rumData);
+            renderRUMTTFBChart(rumData);
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error('PerfAudit Pro: Failed to load audit data:', textStatus, errorThrown, jqXHR);
             const container = document.getElementById('recent-audits-table');

@@ -59,6 +59,13 @@ class Plugin {
         \PerfAuditPro\Frontend\RUM_Enqueue::init();
         \PerfAuditPro\Admin\Admin_Page::init();
         \PerfAuditPro\Admin\Worker_Manager::init();
+        \PerfAuditPro\Admin\Settings_Page::init();
+        \PerfAuditPro\Admin\Rules_Page::init();
+        \PerfAuditPro\Admin\Scheduled_Audits::init();
+        \PerfAuditPro\Admin\Export::init();
+        \PerfAuditPro\Admin\Notifications::init();
+        \PerfAuditPro\Admin\Audit_Details::init();
+        \PerfAuditPro\Admin\Performance_Budgets::init();
         \PerfAuditPro\Worker\PHP_Worker::init();
     }
 

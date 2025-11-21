@@ -13,6 +13,43 @@ if (!defined('ABSPATH')) {
 <div class="wrap perfaudit-pro-dashboard">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
 
+    <?php
+    $scorecard = \PerfAuditPro\Admin\Scorecard::get_scorecard();
+    $grade_colors = array(
+        'A' => '#10b981',
+        'B' => '#3b82f6',
+        'C' => '#f59e0b',
+        'D' => '#ef4444',
+        'F' => '#dc2626',
+    );
+    $grade_color = $grade_colors[$scorecard['grade']] ?? '#64748b';
+    ?>
+    <div class="perfaudit-pro-card" style="margin-bottom: 20px; background: linear-gradient(135deg, <?php echo esc_attr($grade_color); ?> 0%, <?php echo esc_attr($grade_color); ?>dd 100%); color: white; border: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="color: white; margin-top: 0;">📊 Performance Scorecard</h2>
+                <div style="display: flex; align-items: center; gap: 24px; margin-top: 12px;">
+                    <div style="font-size: 64px; font-weight: 700; line-height: 1;"><?php echo esc_html($scorecard['grade']); ?></div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: 600;"><?php echo esc_html($scorecard['score']); ?>/100</div>
+                        <div style="opacity: 0.9; margin-top: 4px;">
+                            <?php if ($scorecard['trend'] === 'improving'): ?>
+                                📈 Improving
+                            <?php elseif ($scorecard['trend'] === 'declining'): ?>
+                                📉 Declining
+                            <?php else: ?>
+                                ➡️ Stable
+                            <?php endif; ?>
+                        </div>
+                        <div style="opacity: 0.8; margin-top: 4px; font-size: 14px;">
+                            Based on <?php echo esc_html($scorecard['audit_count']); ?> recent audits
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="perfaudit-pro-card" style="margin-bottom: 20px; background: linear-gradient(135deg, #007BFF 0%, #0056b3 100%); color: white; border: none;">
         <h2 style="color: white; margin-top: 0;">🤖 Worker Status</h2>
         <div id="worker-status-container">
@@ -92,6 +129,42 @@ if (!defined('ABSPATH')) {
                 <canvas id="rum-cls-chart"></canvas>
             </div>
             <div id="rum-cls-recommendations"></div>
+        </div>
+
+        <div class="perfaudit-pro-card">
+            <h2>⚡ RUM Metrics - FID (First Input Delay)</h2>
+            <div class="perfaudit-pro-explanation">
+                <strong>Real talk:</strong> FID measures how long users wait before they can interact. Under 100ms = instant vibes. 100-300ms = acceptable but not ideal. Over 300ms = your site is giving laggy. Users will bounce if they can't click things.
+            </div>
+            <div id="rum-fid-status"></div>
+            <div class="perfaudit-pro-chart-container">
+                <canvas id="rum-fid-chart"></canvas>
+            </div>
+            <div id="rum-fid-recommendations"></div>
+        </div>
+
+        <div class="perfaudit-pro-card">
+            <h2>🚀 RUM Metrics - FCP (First Contentful Paint)</h2>
+            <div class="perfaudit-pro-explanation">
+                <strong>No cap:</strong> FCP is when users first see ANY content. Under 1.8s = you're winning. 1.8-3s = meh, could be faster. Over 3s = users think your site is broken. First impressions matter, periodt.
+            </div>
+            <div id="rum-fcp-status"></div>
+            <div class="perfaudit-pro-chart-container">
+                <canvas id="rum-fcp-chart"></canvas>
+            </div>
+            <div id="rum-fcp-recommendations"></div>
+        </div>
+
+        <div class="perfaudit-pro-card">
+            <h2>⏱️ RUM Metrics - TTFB (Time to First Byte)</h2>
+            <div class="perfaudit-pro-explanation">
+                <strong>Spill the tea:</strong> TTFB measures server response time. Under 800ms = server is slaying. 800-1800ms = server needs coffee. Over 1800ms = your server is having a whole breakdown. This is the foundation of speed.
+            </div>
+            <div id="rum-ttfb-status"></div>
+            <div class="perfaudit-pro-chart-container">
+                <canvas id="rum-ttfb-chart"></canvas>
+            </div>
+            <div id="rum-ttfb-recommendations"></div>
         </div>
     </div>
 

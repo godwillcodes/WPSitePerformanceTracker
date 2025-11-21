@@ -48,6 +48,7 @@ class Schema {
             speed_index decimal(10,2) DEFAULT NULL,
             time_to_interactive decimal(10,2) DEFAULT NULL,
             status varchar(20) NOT NULL DEFAULT 'pending',
+            device varchar(20) DEFAULT 'desktop',
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             completed_at datetime DEFAULT NULL,
             worker_id varchar(100) DEFAULT NULL,

@@ -127,6 +127,18 @@ class Rest_API {
                 ),
             ),
         ));
+
+        register_rest_route('perfaudit-pro/v1', '/delete-audits', array(
+            'methods' => 'POST',
+            'callback' => array(__CLASS__, 'handle_delete_audits'),
+            'permission_callback' => array(__CLASS__, 'check_capability'),
+            'args' => array(
+                'audit_ids' => array(
+                    'required' => true,
+                    'type' => 'array',
+                ),
+            ),
+        ));
     }
 
     /**
@@ -214,9 +226,16 @@ class Rest_API {
             $url = sanitize_url($url);
         }
         $limit = absint($request->get_param('limit')) ?: 10;
-        $limit = min($limit, 100);
+        $limit = min($limit, 1000);
 
-        $results = $repository->get_recent_audits($url, $limit);
+        $filters = array(
+            'status' => $request->get_param('status'),
+            'search' => $request->get_param('search'),
+            'date_from' => $request->get_param('date_from'),
+            'date_to' => $request->get_param('date_to'),
+        );
+
+        $results = $repository->get_recent_audits($url, $limit, $filters);
 
         return new \WP_REST_Response($results, 200);
     }
@@ -366,6 +385,30 @@ class Rest_API {
         return new \WP_REST_Response(array(
             'success' => true,
             'message' => 'Audit marked as processing',
+        ), 200);
+    }
+
+    /**
+     * Delete audits
+     *
+     * @param \WP_REST_Request $request Request object
+     * @return \WP_REST_Response|\WP_Error
+     */
+    public static function handle_delete_audits($request) {
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/database/class-audit-repository.php';
+        $repository = new \PerfAuditPro\Database\Audit_Repository();
+
+        $audit_ids = $request->get_param('audit_ids');
+        if (!is_array($audit_ids)) {
+            return new \WP_Error('invalid_ids', 'audit_ids must be an array', array('status' => 400));
+        }
+
+        $deleted = $repository->delete_audits($audit_ids);
+
+        return new \WP_REST_Response(array(
+            'success' => true,
+            'deleted' => $deleted,
+            'message' => "Deleted {$deleted} audit(s)",
         ), 200);
     }
 

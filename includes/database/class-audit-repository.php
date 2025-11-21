@@ -157,26 +157,86 @@ class Audit_Repository {
      *
      * @param string|null $url Optional URL filter
      * @param int $limit Number of results
+     * @param array $filters Additional filters (status, date_from, date_to, search)
      * @return array
      */
-    public function get_recent_audits($url = null, $limit = 10) {
+    public function get_recent_audits($url = null, $limit = 10, $filters = array()) {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
         $limit = absint($limit);
 
-        $where = '';
+        $where_conditions = array();
+        $where_values = array();
+
         if ($url) {
             $url = sanitize_url($url);
-            $where = $wpdb->prepare(' WHERE url = %s', $url);
+            $where_conditions[] = 'url = %s';
+            $where_values[] = $url;
         }
 
-        $query = $wpdb->prepare(
-            "SELECT * FROM $table_name $where ORDER BY created_at DESC LIMIT %d",
-            $limit
-        );
+        if (!empty($filters['status'])) {
+            $where_conditions[] = 'status = %s';
+            $where_values[] = sanitize_text_field($filters['status']);
+        }
+
+        if (!empty($filters['search'])) {
+            $where_conditions[] = 'url LIKE %s';
+            $where_values[] = '%' . $wpdb->esc_like(sanitize_text_field($filters['search'])) . '%';
+        }
+
+        if (!empty($filters['date_from'])) {
+            $where_conditions[] = 'DATE(created_at) >= %s';
+            $where_values[] = sanitize_text_field($filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $where_conditions[] = 'DATE(created_at) <= %s';
+            $where_values[] = sanitize_text_field($filters['date_to']);
+        }
+
+        $where = '';
+        if (!empty($where_conditions)) {
+            $where = ' WHERE ' . implode(' AND ', $where_conditions);
+            if (!empty($where_values)) {
+                $where = $wpdb->prepare($where, $where_values);
+            }
+        }
+
+        $query = "SELECT * FROM $table_name $where ORDER BY created_at DESC LIMIT %d";
+        $query = $wpdb->prepare($query, $limit);
 
         return $wpdb->get_results($query, ARRAY_A);
+    }
+
+    /**
+     * Delete audits by IDs
+     *
+     * @param array $audit_ids Array of audit IDs
+     * @return int Number of deleted audits
+     */
+    public function delete_audits($audit_ids) {
+        global $wpdb;
+
+        if (empty($audit_ids) || !is_array($audit_ids)) {
+            return 0;
+        }
+
+        $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
+        $ids = array_map('absint', $audit_ids);
+        $ids = array_filter($ids);
+        
+        if (empty($ids)) {
+            return 0;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+        $query = $wpdb->prepare(
+            "DELETE FROM $table_name WHERE id IN ($placeholders)",
+            $ids
+        );
+
+        return $wpdb->query($query);
     }
 }
 
