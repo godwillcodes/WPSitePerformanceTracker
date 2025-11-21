@@ -36,9 +36,9 @@ class RUM_Repository {
         $metric_values = $this->extract_metrics($metrics);
 
         if ($existing) {
-            return $this->update_aggregated_metrics($existing->id, $metric_values);
+            return $this->update_aggregated_metrics((int) $existing->id, $metric_values);
         } else {
-            return $this->create_aggregated_metrics($url, $date, $metric_values);
+            return $this->create_aggregated_metrics($validated_url, $date, $metric_values);
         }
     }
 
@@ -74,11 +74,11 @@ class RUM_Repository {
      * Create aggregated metrics record
      *
      * @param string $url URL
-     * @param string $date Date
-     * @param array $metrics Metrics
-     * @return bool|\WP_Error
+     * @param string $date Date in Y-m-d format
+     * @param array<string, float> $metrics Extracted metrics
+     * @return bool|\WP_Error True on success, WP_Error on failure
      */
-    private function create_aggregated_metrics($url, $date, $metrics) {
+    private function create_aggregated_metrics(string $url, string $date, array $metrics) {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'perfaudit_rum_metrics';
@@ -101,6 +101,11 @@ class RUM_Repository {
         $result = $wpdb->insert($table_name, $data, $format);
 
         if ($result === false) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::error('Failed to create RUM metrics', array(
+                'url' => $url,
+                'error' => $wpdb->last_error,
+            ));
             return new \WP_Error('db_error', 'Failed to create RUM metrics', array('status' => 500));
         }
 
@@ -110,11 +115,13 @@ class RUM_Repository {
     /**
      * Update aggregated metrics
      *
+     * Updates existing aggregated metrics with new values, recalculating averages.
+     *
      * @param int $id Record ID
-     * @param array $metrics New metrics
-     * @return bool|\WP_Error
+     * @param array<string, float> $metrics New metrics to aggregate
+     * @return bool|\WP_Error True on success, WP_Error on failure
      */
-    private function update_aggregated_metrics($id, $metrics) {
+    private function update_aggregated_metrics(int $id, array $metrics) {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'perfaudit_rum_metrics';
@@ -150,12 +157,17 @@ class RUM_Repository {
         $result = $wpdb->update(
             $table_name,
             $data,
-            array('id' => $id),
+            array('id' => absint($id)),
             $format,
             array('%d')
         );
 
         if ($result === false) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::error('Failed to update RUM metrics', array(
+                'id' => $id,
+                'error' => $wpdb->last_error,
+            ));
             return new \WP_Error('db_error', 'Failed to update RUM metrics', array('status' => 500));
         }
 
@@ -174,14 +186,18 @@ class RUM_Repository {
     public function get_aggregated_metrics(?string $url = null, int $days = 30): array {
         global $wpdb;
 
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-validator.php';
+        
         $table_name = $wpdb->prefix . 'perfaudit_rum_metrics';
-        $days = absint($days);
+        $days = \PerfAuditPro\Utils\Validator::validate_positive_int($days, 30, 1, 365);
         $start_date = date('Y-m-d', strtotime("-{$days} days"));
 
         $where = $wpdb->prepare(' WHERE date >= %s', $start_date);
-        if ($url) {
-            $url = sanitize_url($url);
-            $where .= $wpdb->prepare(' AND url = %s', $url);
+        if ($url !== null && $url !== '') {
+            $validated_url = \PerfAuditPro\Utils\Validator::validate_url($url);
+            if ($validated_url !== null) {
+                $where .= $wpdb->prepare(' AND url = %s', $validated_url);
+            }
         }
 
         $query = "SELECT * FROM $table_name $where ORDER BY date DESC";

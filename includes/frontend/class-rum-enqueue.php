@@ -16,15 +16,23 @@ class RUM_Enqueue {
 
     /**
      * Initialize RUM enqueue
+     *
+     * Enqueues Web Vitals tracking script on frontend.
+     *
+     * @return void
      */
-    public static function init() {
+    public static function init(): void {
         add_action('wp_enqueue_scripts', array(__CLASS__, 'enqueue_rum_script'));
     }
 
     /**
      * Enqueue RUM tracking script
+     *
+     * Only enqueues if RUM tracking is enabled in settings.
+     *
+     * @return void
      */
-    public static function enqueue_rum_script() {
+    public static function enqueue_rum_script(): void {
         $script_url = PERFAUDIT_PRO_PLUGIN_URL . 'assets/js/rum-tracker.js';
         $api_url = rest_url('perfaudit-pro/v1/rum-intake');
         $nonce = wp_create_nonce('wp_rest');

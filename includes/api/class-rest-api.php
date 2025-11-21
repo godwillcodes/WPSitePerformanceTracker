@@ -251,20 +251,23 @@ class Rest_API {
      * Get RUM metrics
      *
      * @param \WP_REST_Request $request Request object
-     * @return \WP_REST_Response
+     * @return \WP_REST_Response Response with RUM metrics
      */
-    public static function get_rum_metrics($request) {
+    public static function get_rum_metrics(\WP_REST_Request $request): \WP_REST_Response {
         require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/database/class-rum-repository.php';
         $repository = new \PerfAuditPro\Database\RUM_Repository();
 
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-validator.php';
+        
         $url = $request->get_param('url');
-        if ($url) {
-            $url = sanitize_url($url);
+        $validated_url = null;
+        if ($url !== null && $url !== '') {
+            $validated_url = \PerfAuditPro\Utils\Validator::validate_url($url);
         }
-        $days = absint($request->get_param('days')) ?: 30;
-        $days = min($days, 365);
+        
+        $days = \PerfAuditPro\Utils\Validator::validate_positive_int($request->get_param('days'), 30, 1, 365);
 
-        $metrics = $repository->get_aggregated_metrics($url, $days);
+        $metrics = $repository->get_aggregated_metrics($validated_url, $days);
 
         return new \WP_REST_Response($metrics, 200);
     }
@@ -273,16 +276,22 @@ class Rest_API {
      * Handle submit audit results from external worker
      *
      * @param \WP_REST_Request $request Request object
-     * @return \WP_REST_Response|\WP_Error
+     * @return \WP_REST_Response|\WP_Error Response object or error
      */
-    public static function handle_submit_audit_results($request) {
+    public static function handle_submit_audit_results(\WP_REST_Request $request) {
         if (!self::check_rate_limit('submit_results')) {
             return new \WP_Error('rate_limit_exceeded', 'Rate limit exceeded', array('status' => 429));
         }
 
-        $audit_id = absint($request->get_param('audit_id'));
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-validator.php';
+        
+        $audit_id_param = $request->get_param('audit_id');
+        if (!\PerfAuditPro\Utils\Validator::is_positive_int($audit_id_param)) {
+            return new \WP_Error('invalid_audit_id', 'Invalid audit ID', array('status' => 400));
+        }
+        $audit_id = (int) $audit_id_param;
+        
         $results = $request->get_param('results');
-
         if (!is_array($results)) {
             return new \WP_Error('invalid_results', 'Results must be an object', array('status' => 400));
         }
@@ -363,10 +372,12 @@ class Rest_API {
     /**
      * Mark audit as processing
      *
+     * Atomically marks an audit as processing to prevent race conditions.
+     *
      * @param \WP_REST_Request $request Request object
-     * @return \WP_REST_Response|\WP_Error
+     * @return \WP_REST_Response|\WP_Error Response object or error
      */
-    public static function handle_mark_processing($request) {
+    public static function handle_mark_processing(\WP_REST_Request $request) {
         global $wpdb;
 
         $audit_id = absint($request->get_param('audit_id'));
@@ -390,6 +401,11 @@ class Rest_API {
         );
 
         if ($result === false) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::error('Failed to mark audit as processing', array(
+                'audit_id' => $audit_id,
+                'error' => $wpdb->last_error,
+            ));
             return new \WP_Error('db_error', 'Failed to update audit status', array('status' => 500));
         }
 
@@ -407,9 +423,9 @@ class Rest_API {
      * Delete audits
      *
      * @param \WP_REST_Request $request Request object
-     * @return \WP_REST_Response|\WP_Error
+     * @return \WP_REST_Response|\WP_Error Response object or error
      */
-    public static function handle_delete_audits($request) {
+    public static function handle_delete_audits(\WP_REST_Request $request) {
         require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/database/class-audit-repository.php';
         $repository = new \PerfAuditPro\Database\Audit_Repository();
 

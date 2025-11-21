@@ -24,8 +24,13 @@ class PHP_Worker {
 
     /**
      * Process pending audits
+     *
+     * Processes up to 5 pending audits to prevent timeout.
+     * Called by WP-Cron or AJAX.
+     *
+     * @return void
      */
-    public static function process_pending_audits() {
+    public static function process_pending_audits(): void {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
@@ -59,14 +64,39 @@ class PHP_Worker {
     /**
      * Process a single audit
      *
-     * @param array $audit Audit record
+     * Executes the audit and updates the database with results.
+     *
+     * @param array<string, mixed> $audit Audit record from database
+     * @return void
      */
-    private static function process_single_audit($audit) {
+    private static function process_single_audit(array $audit): void {
         global $wpdb;
 
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-validator.php';
+        
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
-        $audit_id = $audit['id'];
-        $url = $audit['url'];
+        $audit_id = isset($audit['id']) ? (int) $audit['id'] : 0;
+        $url = isset($audit['url']) ? (string) $audit['url'] : '';
+        
+        if ($audit_id <= 0 || empty($url)) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::warning('Invalid audit record', array('audit' => $audit));
+            return;
+        }
+        
+        $validated_url = \PerfAuditPro\Utils\Validator::validate_url($url);
+        if ($validated_url === null) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::warning('Invalid URL in audit record', array('url' => $url));
+            $wpdb->update(
+                $table_name,
+                array('status' => 'failed'),
+                array('id' => $audit_id),
+                array('%s'),
+                array('%d')
+            );
+            return;
+        }
 
         // Mark as processing
         $wpdb->update(
@@ -79,8 +109,8 @@ class PHP_Worker {
 
         try {
             // Run audit using PageSpeed Insights API
-            $device = isset($audit['device']) ? $audit['device'] : 'desktop';
-            $results = self::run_pagespeed_audit($url, $device);
+            $device = \PerfAuditPro\Utils\Validator::validate_device($audit['device'] ?? 'desktop');
+            $results = self::run_pagespeed_audit($validated_url, $device);
 
             if ($results && !is_wp_error($results)) {
                 // Update audit with results
