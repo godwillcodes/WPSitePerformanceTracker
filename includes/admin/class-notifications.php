@@ -19,7 +19,24 @@ class Notifications {
      */
     public static function init() {
         add_action('admin_menu', array(__CLASS__, 'add_menu'));
+        add_action('wp_ajax_perfaudit_update_notifications', array(__CLASS__, 'update_notifications'));
         add_action('perfaudit_pro_audit_completed', array(__CLASS__, 'check_audit_violations'), 10, 2);
+    }
+
+    /**
+     * Update notifications
+     */
+    public static function update_notifications() {
+        check_ajax_referer('perfaudit_notifications', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Insufficient permissions'));
+            return;
+        }
+
+        $notifications = json_decode(stripslashes($_POST['notifications']), true);
+        update_option('perfaudit_pro_notifications', $notifications);
+        wp_send_json_success();
     }
 
     /**
