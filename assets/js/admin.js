@@ -231,19 +231,25 @@
     }
 
     $(document).ready(function() {
+        console.log('PerfAudit Pro: Initializing dashboard...', PerfAuditPro);
+        
         $.when(fetchAuditResults(), fetchRUMMetrics()).done(function(auditResponse, rumResponse) {
+            console.log('PerfAudit Pro: API responses received', auditResponse, rumResponse);
+            
             // jQuery $.when with $.ajax returns [data, textStatus, jqXHR]
             // WordPress REST API returns JSON array directly
             let auditData = [];
             let rumData = [];
             
             if (auditResponse && auditResponse.length > 0) {
-                auditData = Array.isArray(auditResponse[0]) ? auditResponse[0] : auditResponse[0];
+                auditData = Array.isArray(auditResponse[0]) ? auditResponse[0] : (auditResponse[0] || []);
             }
             
             if (rumResponse && rumResponse.length > 0) {
-                rumData = Array.isArray(rumResponse[0]) ? rumResponse[0] : rumResponse[0];
+                rumData = Array.isArray(rumResponse[0]) ? rumResponse[0] : (rumResponse[0] || []);
             }
+
+            console.log('PerfAudit Pro: Processed data', auditData, rumData);
 
             // Always render charts, they'll show empty state if no data
             renderAuditTimelineChart(auditData);
@@ -252,7 +258,7 @@
             renderRUMLCPChart(rumData);
             renderRUMCLSChart(rumData);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('Failed to load audit data:', textStatus, errorThrown, jqXHR);
+            console.error('PerfAudit Pro: Failed to load audit data:', textStatus, errorThrown, jqXHR);
             const container = document.getElementById('recent-audits-table');
             if (container) {
                 let errorMsg = 'Error loading data. ';
