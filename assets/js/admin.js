@@ -59,7 +59,7 @@
             if (container) container.innerHTML = '';
             return;
         }
-        let html = '<div class="perfaudit-pro-recommendations"><h4>💡 Recommendations:</h4><ul>';
+        let html = '<div class="perfaudit-pro-recommendations"><h4>Recommendations</h4><ul>';
         recommendations.forEach(rec => {
             html += '<li>' + escapeHtml(rec) + '</li>';
         });
@@ -72,7 +72,7 @@
         if (!ctx) return;
 
         if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>No audit data available yet. Create your first audit to get started!</p></div>';
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No audit data available yet. Create your first audit to get started.</p></div>';
             return;
         }
 
@@ -159,13 +159,13 @@
         if (!ctx) return;
 
         if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🥧</div><p>No audit data available yet.</p></div>';
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No audit data available yet.</p></div>';
             return;
         }
 
         const scores = data.map(item => parseFloat(item.performance_score) || 0).filter(score => score > 0);
         if (scores.length === 0) {
-            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>No completed audits with scores yet.</p></div>';
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No completed audits with scores yet.</p></div>';
             return;
         }
 
@@ -245,7 +245,7 @@
         if (!ctx) return;
 
         if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚡</div><p>No RUM data yet. Metrics will appear as users visit your site!</p></div>';
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No RUM data yet. Metrics will appear as users visit your site.</p></div>';
             return;
         }
 
@@ -335,7 +335,7 @@
         if (!ctx) return;
 
         if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎨</div><p>No RUM data yet. Metrics will appear as users visit your site!</p></div>';
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No RUM data yet. Metrics will appear as users visit your site.</p></div>';
             return;
         }
 
@@ -421,7 +421,7 @@
         if (!ctx) return;
 
         if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚡</div><p>No RUM data yet. Metrics will appear as users visit your site!</p></div>';
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No RUM data yet. Metrics will appear as users visit your site.</p></div>';
             return;
         }
 
@@ -430,7 +430,7 @@
         const p75FID = data.map(item => parseFloat(item.p75_fid) || 0);
         const latestP75 = p75FID[p75FID.length - 1] || avgFID[avgFID.length - 1] || 0;
 
-        const statusObj = latestP75 < 100 ? { status: 'good', text: 'Good' } : latestP75 < 300 ? { status: 'warning', text: 'Needs Improvement' } : { status: 'bad', text: 'Poor' };
+        const statusObj = latestP75 < 100 ? { status: 'good', label: 'Good' } : latestP75 < 300 ? { status: 'warning', label: 'Needs Improvement' } : { status: 'bad', label: 'Poor' };
         renderStatusBadge('rum-fid-status', statusObj);
 
         const recommendations = [];
@@ -500,7 +500,7 @@
         if (!ctx) return;
 
         if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚀</div><p>No RUM data yet. Metrics will appear as users visit your site!</p></div>';
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No RUM data yet. Metrics will appear as users visit your site.</p></div>';
             return;
         }
 
@@ -509,7 +509,7 @@
         const p75FCP = data.map(item => parseFloat(item.p75_fcp) || 0);
         const latestP75 = p75FCP[p75FCP.length - 1] || avgFCP[avgFCP.length - 1] || 0;
 
-        const statusObj = latestP75 < 1800 ? { status: 'good', text: 'Good' } : latestP75 < 3000 ? { status: 'warning', text: 'Needs Improvement' } : { status: 'bad', text: 'Poor' };
+        const statusObj = latestP75 < 1800 ? { status: 'good', label: 'Good' } : latestP75 < 3000 ? { status: 'warning', label: 'Needs Improvement' } : { status: 'bad', label: 'Poor' };
         renderStatusBadge('rum-fcp-status', statusObj);
 
         const recommendations = [];
@@ -579,7 +579,7 @@
         if (!ctx) return;
 
         if (!data || data.length === 0) {
-            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⏱️</div><p>No RUM data yet. Metrics will appear as users visit your site!</p></div>';
+            ctx.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No RUM data yet. Metrics will appear as users visit your site.</p></div>';
             return;
         }
 
@@ -588,7 +588,7 @@
         const p75TTFB = data.map(item => parseFloat(item.p75_ttfb) || 0);
         const latestP75 = p75TTFB[p75TTFB.length - 1] || avgTTFB[avgTTFB.length - 1] || 0;
 
-        const statusObj = latestP75 < 800 ? { status: 'good', text: 'Good' } : latestP75 < 1800 ? { status: 'warning', text: 'Needs Improvement' } : { status: 'bad', text: 'Poor' };
+        const statusObj = latestP75 < 800 ? { status: 'good', label: 'Good' } : latestP75 < 1800 ? { status: 'warning', label: 'Needs Improvement' } : { status: 'bad', label: 'Poor' };
         renderStatusBadge('rum-ttfb-status', statusObj);
 
         const recommendations = [];
@@ -900,11 +900,21 @@
                 }, 2000);
             }).fail(function(jqXHR) {
                 let errorMsg = 'Failed to create audit. ';
-                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
-                    errorMsg += jqXHR.responseJSON.message;
+                if (jqXHR.responseJSON) {
+                    // WordPress REST API error format
+                    if (jqXHR.responseJSON.message) {
+                        errorMsg += jqXHR.responseJSON.message;
+                    } else if (jqXHR.responseJSON.data && jqXHR.responseJSON.data.message) {
+                        errorMsg += jqXHR.responseJSON.data.message;
+                    } else if (jqXHR.responseJSON.code) {
+                        errorMsg += jqXHR.responseJSON.code;
+                    } else {
+                        errorMsg += 'Please check the console for details.';
+                    }
                 } else {
                     errorMsg += 'Please check the console for details.';
                 }
+                console.error('Audit creation error:', jqXHR);
                 messageDiv.html('<div style="color: #d63638; padding: 10px; background: #fcf0f1; border-left: 4px solid #d63638; margin-top: 10px;">' + errorMsg + '</div>');
             }).always(function() {
                 submitBtn.prop('disabled', false).text('Create Audit');

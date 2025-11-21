@@ -37,6 +37,19 @@ class Audit_Repository {
         global $wpdb;
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
 
+        // Ensure table exists and is up to date (in case it wasn't created during activation or needs migration)
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/database/class-schema.php';
+        
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") !== $table_name) {
+            \PerfAuditPro\Database\Schema::create_tables();
+        } else {
+            // Check if device column exists, if not run migration
+            $columns = $wpdb->get_col("DESCRIBE $table_name");
+            if (!in_array('device', $columns, true)) {
+                \PerfAuditPro\Database\Schema::migrate_tables();
+            }
+        }
+
         $result = $wpdb->insert(
             $table_name,
             array(
@@ -50,11 +63,13 @@ class Audit_Repository {
 
         if ($result === false) {
             require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            $db_error = $wpdb->last_error ?: 'Unknown database error';
             \PerfAuditPro\Utils\Logger::error('Failed to create audit record', array(
                 'url' => $validated_url,
-                'error' => $wpdb->last_error,
+                'error' => $db_error,
+                'table' => $table_name,
             ));
-            return new \WP_Error('db_error', 'Failed to create audit record', array('status' => 500));
+            return new \WP_Error('db_error', 'Failed to create audit record: ' . $db_error, array('status' => 500));
         }
 
         return (int) $wpdb->insert_id;

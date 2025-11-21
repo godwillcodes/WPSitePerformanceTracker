@@ -28,12 +28,17 @@ class Scorecard {
             return $a['status'] === 'completed' && !empty($a['performance_score']);
         });
 
+        // Reindex array to ensure sequential keys
+        $completed_audits = array_values($completed_audits);
+
         if (empty($completed_audits)) {
             return array(
                 'grade' => 'N/A',
                 'score' => 0,
+                'trend' => 'stable',
                 'status' => 'no_data',
                 'message' => 'No completed audits yet',
+                'audit_count' => 0,
             );
         }
 

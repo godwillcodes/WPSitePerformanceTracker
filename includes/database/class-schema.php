@@ -30,6 +30,33 @@ class Schema {
         self::create_synthetic_audits_table($wpdb, $charset_collate);
         self::create_lighthouse_json_table($wpdb, $charset_collate);
         self::create_rum_metrics_table($wpdb, $charset_collate);
+        
+        // Run migrations to add missing columns
+        self::migrate_tables();
+    }
+
+    /**
+     * Migrate tables to add missing columns
+     *
+     * Adds columns that may have been added in schema updates.
+     *
+     * @return void
+     */
+    public static function migrate_tables(): void {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
+        
+        // Check if table exists
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") !== $table_name) {
+            return;
+        }
+
+        // Check if device column exists, if not add it
+        $columns = $wpdb->get_col("DESCRIBE $table_name");
+        if (!in_array('device', $columns, true)) {
+            $wpdb->query("ALTER TABLE $table_name ADD COLUMN device varchar(20) DEFAULT 'desktop' AFTER status");
+        }
     }
 
     /**

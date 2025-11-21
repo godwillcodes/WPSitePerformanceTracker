@@ -38,7 +38,7 @@ class RUM_Repository {
         if ($existing) {
             return $this->update_aggregated_metrics((int) $existing->id, $metric_values);
         } else {
-            return $this->create_aggregated_metrics($validated_url, $date, $metric_values);
+            return $this->create_aggregated_metrics($url, $date, $metric_values);
         }
     }
 

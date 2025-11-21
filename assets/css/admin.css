@@ -1,125 +1,131 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --color-primary: #2563eb;
+    --color-primary-dark: #1e40af;
+    --color-text: #1f2937;
+    --color-text-light: #6b7280;
+    --color-text-lighter: #9ca3af;
+    --color-border: #e5e7eb;
+    --color-border-light: #f3f4f6;
+    --color-bg: #ffffff;
+    --color-bg-light: #f9fafb;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
 
 .perfaudit-pro-dashboard {
-    max-width: 1600px;
-    margin: 20px auto;
-    padding: 0 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl) var(--spacing-lg);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: #2C3E50;
+    color: var(--color-text);
+    background: var(--color-bg-light);
+    min-height: calc(100vh - 32px);
 }
 
 .perfaudit-pro-dashboard h1 {
-    font-size: 36px;
-    font-weight: 700;
-    margin-bottom: 40px;
-    color: #2C3E50;
-    letter-spacing: -0.5px;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 var(--spacing-2xl) 0;
+    color: var(--color-text);
+    letter-spacing: -0.025em;
 }
 
 .perfaudit-pro-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    gap: 24px;
-    margin-bottom: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
 }
 
 .perfaudit-pro-card {
-    background: #ffffff;
-    border: 1px solid rgba(44, 62, 80, 0.08);
-    border-radius: 12px;
-    padding: 32px;
-    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.04);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.perfaudit-pro-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #007BFF 0%, #0056b3 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .perfaudit-pro-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.08);
-    border-color: rgba(0, 123, 255, 0.2);
-}
-
-.perfaudit-pro-card:hover::before {
-    opacity: 1;
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-border);
 }
 
 .perfaudit-pro-card h2 {
-    margin-top: 0;
-    margin-bottom: 16px;
-    font-size: 20px;
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: 18px;
     font-weight: 600;
-    color: #2C3E50;
-    letter-spacing: -0.3px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+    line-height: 1.4;
 }
 
 .perfaudit-pro-card h3 {
-    margin-top: 0;
-    font-size: 18px;
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: 16px;
     font-weight: 600;
-    color: #2C3E50;
-    letter-spacing: -0.2px;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
 }
 
 .perfaudit-pro-explanation {
     font-size: 13px;
-    color: #5a6c7d;
-    margin-bottom: 24px;
-    line-height: 1.7;
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
     font-weight: 400;
-    padding: 16px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 3px solid #007BFF;
+    padding: var(--spacing-md);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--color-border);
 }
 
 .perfaudit-pro-explanation strong {
-    color: #2C3E50;
-    font-weight: 600;
+    color: var(--color-text);
+    font-weight: 500;
 }
 
 .perfaudit-pro-status {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
+    gap: var(--spacing-sm);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-md);
 }
 
 .perfaudit-pro-status.good {
-    background: #007BFF;
+    background: var(--color-success);
     color: white;
 }
 
 .perfaudit-pro-status.warning {
-    background: #FF6B6B;
+    background: var(--color-warning);
     color: white;
 }
 
 .perfaudit-pro-status.bad {
-    background: #FF6B6B;
+    background: var(--color-error);
     color: white;
-    opacity: 0.9;
 }
 
 .perfaudit-pro-status::before {
@@ -131,144 +137,144 @@
 }
 
 .perfaudit-pro-recommendations {
-    margin-top: 20px;
-    padding: 20px;
-    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
-    border-radius: 8px;
-    border-left: 3px solid #FF6B6B;
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--color-border);
 }
 
 .perfaudit-pro-recommendations h4 {
-    margin: 0 0 12px 0;
-    font-size: 13px;
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 12px;
     font-weight: 600;
-    color: #2C3E50;
-    letter-spacing: 0.2px;
+    color: var(--color-text);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .perfaudit-pro-recommendations ul {
     margin: 0;
     padding-left: 20px;
-    color: #5a6c7d;
+    color: var(--color-text-light);
     font-size: 13px;
-    line-height: 1.8;
+    line-height: 1.7;
     font-weight: 400;
 }
 
 .perfaudit-pro-recommendations li {
-    margin-bottom: 6px;
+    margin-bottom: var(--spacing-xs);
 }
 
 .perfaudit-pro-chart-container {
     position: relative;
-    height: 320px;
+    height: 300px;
     width: 100%;
-    background: white;
-    border-radius: 8px;
-    padding: 16px;
+    background: var(--color-bg);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-md);
 }
 
 #create-audit-form {
     display: flex;
-    gap: 12px;
+    gap: var(--spacing-md);
     align-items: flex-end;
-    margin-top: 20px;
+    margin-top: var(--spacing-lg);
 }
 
 #create-audit-form label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: var(--spacing-sm);
     font-weight: 500;
     font-size: 13px;
-    color: #2C3E50;
-    letter-spacing: 0.1px;
+    color: var(--color-text);
 }
 
 #create-audit-form input {
     width: 100%;
-    padding: 12px 16px;
-    border: 1.5px solid rgba(44, 62, 80, 0.15);
-    border-radius: 8px;
+    padding: 10px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     font-size: 14px;
     font-family: 'Inter', sans-serif;
-    color: #2C3E50;
-    transition: all 0.2s ease;
-    background: white;
+    color: var(--color-text);
+    transition: all 0.15s ease;
+    background: var(--color-bg);
 }
 
 #create-audit-form input:focus {
     outline: none;
-    border-color: #007BFF;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 #create-audit-form button {
-    padding: 12px 28px;
-    background: #007BFF;
+    padding: 10px 20px;
+    background: var(--color-primary);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     color: white;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 14px;
     font-family: 'Inter', sans-serif;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
-    letter-spacing: 0.2px;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
 }
 
 #create-audit-form button:hover {
-    background: #0056b3;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    background: var(--color-primary-dark);
+    box-shadow: var(--shadow-md);
 }
 
 #create-audit-form button:active {
-    transform: translateY(0);
+    transform: translateY(1px);
 }
 
 #create-audit-message {
-    margin-top: 16px;
+    margin-top: var(--spacing-md);
 }
 
 #recent-audits-table {
     overflow-x: auto;
-    margin-top: 8px;
+    margin-top: var(--spacing-md);
 }
 
 #recent-audits-table table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    border: 1px solid rgba(44, 62, 80, 0.08);
+    border: 1px solid var(--color-border);
 }
 
 #recent-audits-table th,
 #recent-audits-table td {
-    padding: 16px;
+    padding: 12px var(--spacing-md);
     text-align: left;
-    border-bottom: 1px solid rgba(44, 62, 80, 0.06);
+    border-bottom: 1px solid var(--color-border);
     font-size: 13px;
 }
 
 #recent-audits-table th {
-    background: #2C3E50;
-    color: white;
+    background: var(--color-bg-light);
+    color: var(--color-text);
     font-weight: 600;
     text-transform: uppercase;
     font-size: 11px;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--color-border);
 }
 
 #recent-audits-table tbody tr {
-    background: white;
-    transition: background 0.2s ease;
+    background: var(--color-bg);
+    transition: background 0.15s ease;
 }
 
 #recent-audits-table tbody tr:hover {
-    background: #f8f9fa;
+    background: var(--color-bg-light);
 }
 
 #recent-audits-table tbody tr:last-child td {
@@ -277,45 +283,42 @@
 
 .score-badge {
     display: inline-block;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
     font-size: 11px;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .score-badge.excellent {
-    background: #007BFF;
+    background: var(--color-success);
     color: white;
 }
 
 .score-badge.good {
-    background: #007BFF;
+    background: var(--color-primary);
     color: white;
-    opacity: 0.8;
 }
 
 .score-badge.needs-improvement {
-    background: #FF6B6B;
+    background: var(--color-warning);
     color: white;
-    opacity: 0.9;
 }
 
 .score-badge.poor {
-    background: #FF6B6B;
+    background: var(--color-error);
     color: white;
 }
 
 .empty-state {
-    padding: 60px 20px;
+    padding: var(--spacing-2xl) var(--spacing-lg);
     text-align: center;
-    color: #5a6c7d;
+    color: var(--color-text-light);
 }
 
 .empty-state-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-    opacity: 0.4;
+    display: none;
 }
 
 .empty-state p {
@@ -325,24 +328,160 @@
 }
 
 .perfaudit-pro-card p {
-    color: #5a6c7d;
+    color: var(--color-text-light);
     font-size: 14px;
     line-height: 1.6;
-    margin-bottom: 16px;
+    margin-bottom: var(--spacing-md);
 }
 
 .perfaudit-pro-card ol,
 .perfaudit-pro-card ul {
-    color: #5a6c7d;
+    color: var(--color-text-light);
     font-size: 14px;
-    line-height: 1.8;
+    line-height: 1.7;
 }
 
 .perfaudit-pro-card li {
-    margin-bottom: 8px;
+    margin-bottom: var(--spacing-sm);
 }
 
 .perfaudit-pro-card strong {
-    color: #2C3E50;
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+/* Scorecard Card */
+.perfaudit-pro-scorecard {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.perfaudit-pro-scorecard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+}
+
+.perfaudit-pro-scorecard-title {
+    font-size: 16px;
     font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+.perfaudit-pro-scorecard-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.perfaudit-pro-scorecard-grade {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-text);
+}
+
+.perfaudit-pro-scorecard-details {
+    flex: 1;
+}
+
+.perfaudit-pro-scorecard-score {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-xs);
+}
+
+.perfaudit-pro-scorecard-trend {
+    font-size: 13px;
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xs);
+}
+
+.perfaudit-pro-scorecard-count {
+    font-size: 12px;
+    color: var(--color-text-lighter);
+}
+
+/* Worker Status Card */
+.perfaudit-pro-worker-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.perfaudit-pro-worker-card h2 {
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.perfaudit-pro-worker-card p {
+    color: var(--color-text-light);
+    font-size: 14px;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.perfaudit-pro-worker-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.perfaudit-pro-worker-button {
+    padding: 10px 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.perfaudit-pro-worker-button:hover {
+    background: var(--color-bg-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.perfaudit-pro-worker-button.primary {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.perfaudit-pro-worker-button.primary:hover {
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+}
+
+.perfaudit-pro-worker-status {
+    font-size: 13px;
+    color: var(--color-text-light);
+    margin-left: var(--spacing-md);
+}
+
+.perfaudit-pro-worker-message {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--color-border);
+    font-size: 13px;
+    color: var(--color-text-light);
+    display: none;
 }
