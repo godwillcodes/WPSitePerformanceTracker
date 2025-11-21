@@ -40,9 +40,9 @@ class Audit_Details {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is safe (from $wpdb->prefix), cannot be prepared
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Repository needs direct queries for data operations
         $audit = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM `{$table_name}` WHERE id = %d",
+            'SELECT * FROM `' . esc_sql($table_name) . '` WHERE id = %d',
             $audit_id
         ), ARRAY_A);
 
@@ -53,9 +53,9 @@ class Audit_Details {
 
         // Get Lighthouse JSON if available
         $json_table = $wpdb->prefix . 'perfaudit_lighthouse_json';
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is safe (from $wpdb->prefix), cannot be prepared
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Repository needs direct queries for data operations
         $lighthouse_json = $wpdb->get_var($wpdb->prepare(
-            "SELECT full_json FROM `{$json_table}` WHERE audit_id = %d LIMIT 1",
+            'SELECT full_json FROM `' . esc_sql($json_table) . '` WHERE audit_id = %d LIMIT 1',
             $audit_id
         ));
 

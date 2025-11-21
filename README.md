@@ -9,7 +9,7 @@
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html
 
-> Professional WordPress performance monitoring and optimization plugin powered by Google PageSpeed Insights API and Real User Monitoring.
+> WordPress performance monitoring plugin with Google PageSpeed Insights API and Real User Monitoring.
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://www.php.net/)

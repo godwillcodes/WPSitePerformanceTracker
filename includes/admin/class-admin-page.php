@@ -44,12 +44,12 @@ class Admin_Page {
      */
     public static function enqueue_admin_assets($hook) {
         $perfaudit_pages = array(
-            'toplevel_page_perfaudit-pro',
-            'perfaudit-pro_page_perfaudit-pro-settings',
-            'perfaudit-pro_page_perfaudit-pro-rules',
-            'perfaudit-pro_page_perfaudit-pro-scheduled',
-            'perfaudit-pro_page_perfaudit-pro-notifications',
-            'perfaudit-pro_page_perfaudit-pro-budgets',
+            'toplevel_page_site-performance-tracker',
+            'site-performance-tracker_page_perfaudit-pro-settings',
+            'site-performance-tracker_page_perfaudit-pro-rules',
+            'site-performance-tracker_page_perfaudit-pro-scheduled',
+            'site-performance-tracker_page_perfaudit-pro-notifications',
+            'site-performance-tracker_page_perfaudit-pro-budgets',
         );
 
         if (!in_array($hook, $perfaudit_pages)) {

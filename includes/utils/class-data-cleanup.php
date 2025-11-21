@@ -73,20 +73,20 @@ class Data_Cleanup {
 
         // Delete old audits
         $audits_table = $wpdb->prefix . 'perfaudit_synthetic_audits';
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is safe (from $wpdb->prefix), cannot be prepared. Cleanup needs direct queries for data deletion.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Cleanup needs direct queries for data deletion
         $audits_deleted = $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM `{$audits_table}` WHERE created_at < %s",
+                'DELETE FROM `' . esc_sql($audits_table) . '` WHERE created_at < %s',
                 $audit_cutoff
             )
         );
 
         // Delete old RUM metrics
         $rum_table = $wpdb->prefix . 'perfaudit_rum_metrics';
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is safe (from $wpdb->prefix), cannot be prepared. Cleanup needs direct queries for data deletion.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Cleanup needs direct queries for data deletion
         $rum_deleted = $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM `{$rum_table}` WHERE date < %s",
+                'DELETE FROM `' . esc_sql($rum_table) . '` WHERE date < %s',
                 $rum_cutoff
             )
         );

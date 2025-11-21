@@ -27,10 +27,10 @@ class RUM_Repository {
         $table_name = $wpdb->prefix . 'perfaudit_rum_metrics';
         $date = current_time('Y-m-d');
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is safe, values are prepared
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Repository needs direct queries for data operations
         $existing = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT * FROM `{$table_name}` WHERE url = %s AND date = %s",
+                'SELECT * FROM `' . esc_sql($table_name) . '` WHERE url = %s AND date = %s',
                 $url,
                 $date
             )
@@ -130,8 +130,8 @@ class RUM_Repository {
 
         $table_name = $wpdb->prefix . 'perfaudit_rum_metrics';
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is safe, value is prepared
-        $existing = $wpdb->get_row($wpdb->prepare("SELECT * FROM `{$table_name}` WHERE id = %d", $id), ARRAY_A);
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Repository needs direct queries for data operations
+        $existing = $wpdb->get_row($wpdb->prepare('SELECT * FROM `' . esc_sql($table_name) . '` WHERE id = %d', $id), ARRAY_A);
 
         if (!$existing) {
             return new \WP_Error('not_found', 'Metrics record not found', array('status' => 404));
@@ -209,11 +209,10 @@ class RUM_Repository {
             }
         }
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, values are prepared
-        $query = "SELECT * FROM `{$table_name}` WHERE " . implode(' AND ', $where_conditions) . " ORDER BY date DESC";
+        $query = 'SELECT * FROM `' . esc_sql($table_name) . '` WHERE ' . implode(' AND ', $where_conditions) . ' ORDER BY date DESC';
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query string is built safely, then prepared
         $prepared_query = $wpdb->prepare($query, $where_values);
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared via $wpdb->prepare()
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Query is prepared via $wpdb->prepare()
         return $wpdb->get_results($prepared_query, ARRAY_A);
     }
 }

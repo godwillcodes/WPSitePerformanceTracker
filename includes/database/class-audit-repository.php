@@ -15,6 +15,23 @@ if (!defined('ABSPATH')) {
 class Audit_Repository {
 
     /**
+     * Clear audit cache group
+     *
+     * Compatibility wrapper for wp_cache_flush_group() which requires WordPress 6.1+
+     *
+     * @return void
+     */
+    private static function clear_audit_cache(): void {
+        if (function_exists('wp_cache_flush_group')) {
+            wp_cache_flush_group('perfaudit_audits');
+        } else {
+            // Fallback for WordPress < 6.1: increment cache version
+            $cache_version = get_option('perfaudit_audit_cache_version', 1);
+            update_option('perfaudit_audit_cache_version', $cache_version + 1, false);
+        }
+    }
+
+    /**
      * Create a synthetic audit record
      *
      * @param string $url URL to audit
@@ -74,6 +91,9 @@ class Audit_Repository {
             ));
             return new \WP_Error('db_error', 'Failed to create audit record: ' . $db_error, array('status' => 500));
         }
+
+        // Clear cache when new audit is created
+        self::clear_audit_cache();
 
         return (int) $wpdb->insert_id;
     }
@@ -154,7 +174,8 @@ class Audit_Repository {
             $this->store_lighthouse_json($audit_id, $results['lighthouse_json']);
         }
 
-        // Clear scorecard cache when audit results are updated
+        // Clear caches when audit results are updated
+        self::clear_audit_cache();
         require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/admin/class-scorecard.php';
         \PerfAuditPro\Admin\Scorecard::clear_cache();
 
@@ -214,6 +235,18 @@ class Audit_Repository {
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
         $limit = \PerfAuditPro\Utils\Validator::validate_positive_int($limit, 10, 1, 1000);
 
+        // Generate cache key based on parameters and cache version (for compatibility with WordPress < 6.1)
+        $cache_version = get_option('perfaudit_audit_cache_version', 1);
+        $cache_key = 'perfaudit_recent_audits_' . md5(serialize(array($url, $limit, $filters, $cache_version)));
+        $cache_group = 'perfaudit_audits';
+        $cache_ttl = 300; // 5 minutes
+
+        // Try to get from cache first
+        $cached = wp_cache_get($cache_key, $cache_group);
+        if ($cached !== false) {
+            return $cached;
+        }
+
         $where_conditions = array();
         $where_values = array();
 
@@ -245,8 +278,7 @@ class Audit_Repository {
             $where_values[] = sanitize_text_field($filters['date_to']);
         }
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, values are prepared
-        $query = "SELECT * FROM `{$table_name}`";
+        $query = 'SELECT * FROM `' . esc_sql($table_name) . '`';
         if (!empty($where_conditions)) {
             $query .= ' WHERE ' . implode(' AND ', $where_conditions);
         }
@@ -261,8 +293,13 @@ class Audit_Repository {
             $prepared_query = $wpdb->prepare($query, $limit);
         }
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared via $wpdb->prepare()
-        return $wpdb->get_results($prepared_query, ARRAY_A);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery -- Query is prepared via $wpdb->prepare(), caching implemented
+        $results = $wpdb->get_results($prepared_query, ARRAY_A);
+
+        // Cache the results
+        wp_cache_set($cache_key, $results, $cache_group, $cache_ttl);
+
+        return $results;
     }
 
     /**
@@ -293,16 +330,16 @@ class Audit_Repository {
         }
 
         $placeholders = implode(',', array_fill(0, count($valid_ids), '%d'));
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and placeholders are safe, values are prepared
-        $query = "DELETE FROM `{$table_name}` WHERE id IN ({$placeholders})";
+        $query = 'DELETE FROM `' . esc_sql($table_name) . '` WHERE id IN (' . $placeholders . ')';
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query string is built safely, then prepared
         $prepared_query = $wpdb->prepare($query, $valid_ids);
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared via $wpdb->prepare()
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery -- Query is prepared via $wpdb->prepare()
         $deleted = $wpdb->query($prepared_query);
         
-        // Clear scorecard cache when audits are deleted
+        // Clear caches when audits are deleted
         if ($deleted > 0) {
+            self::clear_audit_cache();
             require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/admin/class-scorecard.php';
             \PerfAuditPro\Admin\Scorecard::clear_cache();
         }

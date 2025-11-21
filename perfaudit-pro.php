@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Site Performance Tracker
  * Plugin URI: https://github.com/godwillcodes/PerfAuditPro
- * Description: Track website performance with automated audits via Google PageSpeed Insights API and Real User Monitoring. Get Core Web Vitals insights.
+ * Description: Track website performance with automated audits via Google PageSpeed Insights API and Real User Monitoring.
  * Version: 1.0.0
  * Author: Godwill Barasa
  * Author URI: https://github.com/godwillcodes/PerfAuditPro
