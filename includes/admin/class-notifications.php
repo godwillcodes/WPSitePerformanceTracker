@@ -128,7 +128,7 @@ class Notifications {
      * Send email notification
      */
     private static function send_email($to, $evaluation) {
-        $subject = 'PerfAudit Pro: Performance Violations Detected';
+        $subject = 'Site Performance Tracker: Performance Violations Detected';
         $message = "Performance violations detected:\n\n";
         foreach ($evaluation['violations'] as $violation) {
             $message .= "- " . $violation['message'] . "\n";

@@ -150,6 +150,10 @@ class Audit_Repository {
             $this->store_lighthouse_json($audit_id, $results['lighthouse_json']);
         }
 
+        // Clear scorecard cache when audit results are updated
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/admin/class-scorecard.php';
+        \PerfAuditPro\Admin\Scorecard::clear_cache();
+
         return true;
     }
 
@@ -284,6 +288,12 @@ class Audit_Repository {
         );
 
         $deleted = $wpdb->query($query);
+        
+        // Clear scorecard cache when audits are deleted
+        if ($deleted > 0) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/admin/class-scorecard.php';
+            \PerfAuditPro\Admin\Scorecard::clear_cache();
+        }
         
         if ($deleted === false) {
             require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';

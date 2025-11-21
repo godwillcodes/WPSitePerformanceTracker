@@ -22,6 +22,7 @@ if (!defined('ABSPATH')) {
                 <a href="#thresholds" class="nav-tab">Performance Thresholds</a>
                 <a href="#notifications" class="nav-tab">Notifications</a>
                 <a href="#worker" class="nav-tab">Worker</a>
+                <a href="#data" class="nav-tab">Data Retention</a>
                 <a href="#rum" class="nav-tab">RUM Tracking</a>
             </nav>
 
@@ -192,6 +193,59 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
+            <div id="data" class="tab-content">
+                <div class="perfaudit-pro-card">
+                    <h2>Data Retention Settings</h2>
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label for="perfaudit_pro_audit_retention_days">Audit Retention (Days)</label>
+                            </th>
+                            <td>
+                                <input type="number" id="perfaudit_pro_audit_retention_days" name="perfaudit_pro_audit_retention_days" 
+                                    value="<?php echo esc_attr(get_option('perfaudit_pro_audit_retention_days', '90')); ?>" 
+                                    min="7" max="365" step="1" />
+                                <p class="description">Keep audit records for this many days. Older audits will be automatically deleted. Minimum: 7 days, Maximum: 365 days.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="perfaudit_pro_rum_retention_days">RUM Metrics Retention (Days)</label>
+                            </th>
+                            <td>
+                                <input type="number" id="perfaudit_pro_rum_retention_days" name="perfaudit_pro_rum_retention_days" 
+                                    value="<?php echo esc_attr(get_option('perfaudit_pro_rum_retention_days', '90')); ?>" 
+                                    min="7" max="365" step="1" />
+                                <p class="description">Keep RUM metrics for this many days. Older metrics will be automatically deleted. Minimum: 7 days, Maximum: 365 days.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="perfaudit_pro_auto_cleanup">Auto Cleanup</label>
+                            </th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" id="perfaudit_pro_auto_cleanup" name="perfaudit_pro_auto_cleanup" 
+                                        value="1" <?php checked(get_option('perfaudit_pro_auto_cleanup', true)); ?> />
+                                    Automatically delete old data based on retention settings
+                                </label>
+                                <p class="description">When enabled, old audits and RUM metrics will be automatically deleted daily via WP-Cron.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label>Manual Cleanup</label>
+                            </th>
+                            <td>
+                                <button type="button" id="cleanup-now-btn" class="button">Run Cleanup Now</button>
+                                <p class="description">Manually trigger cleanup of old data based on current retention settings.</p>
+                                <div id="cleanup-message" style="margin-top: 10px;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
             <div id="rum" class="tab-content">
                 <div class="perfaudit-pro-card">
                     <h2>RUM Tracking Settings</h2>
@@ -202,8 +256,14 @@ if (!defined('ABSPATH')) {
                             </th>
                             <td>
                                 <input type="checkbox" id="perfaudit_pro_rum_enabled" name="perfaudit_pro_rum_enabled" 
-                                    value="1" <?php checked(get_option('perfaudit_pro_rum_enabled', true), true); ?> />
+                                    value="1" <?php checked(get_option('perfaudit_pro_rum_enabled', false), true); ?> />
                                 <label for="perfaudit_pro_rum_enabled">Track real user metrics on frontend</label>
+                                <p class="description">
+                                    <strong>Important:</strong> RUM tracking collects anonymous performance metrics from your site visitors. 
+                                    Per WordPress.org guidelines, you must obtain user consent before tracking. 
+                                    The tracking script will only run if users have consented via cookie/localStorage. 
+                                    Consider adding a privacy notice or cookie consent banner to inform users.
+                                </p>
                             </td>
                         </tr>
                         <tr>

@@ -64,6 +64,28 @@ class Settings_Page {
         // RUM Settings
         register_setting('perfaudit_pro_settings', 'perfaudit_pro_rum_enabled');
         register_setting('perfaudit_pro_settings', 'perfaudit_pro_rum_sample_rate');
+
+        // Data Retention Settings
+        register_setting('perfaudit_pro_settings', 'perfaudit_pro_audit_retention_days', array(
+            'type' => 'integer',
+            'sanitize_callback' => function($value) {
+                $value = absint($value);
+                return max(7, min(365, $value)); // Clamp between 7 and 365 days
+            },
+            'default' => 90,
+        ));
+        register_setting('perfaudit_pro_settings', 'perfaudit_pro_rum_retention_days', array(
+            'type' => 'integer',
+            'sanitize_callback' => function($value) {
+                $value = absint($value);
+                return max(7, min(365, $value)); // Clamp between 7 and 365 days
+            },
+            'default' => 90,
+        ));
+        register_setting('perfaudit_pro_settings', 'perfaudit_pro_auto_cleanup', array(
+            'type' => 'boolean',
+            'default' => true,
+        ));
     }
 
     /**

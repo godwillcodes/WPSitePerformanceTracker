@@ -62,6 +62,31 @@
         });
     }
 
+    // Check if user has consented to tracking
+    function hasConsent() {
+        // Check for consent cookie/localStorage
+        if (typeof Storage !== 'undefined') {
+            const consent = localStorage.getItem('perfaudit_rum_consent');
+            if (consent === 'true') {
+                return true;
+            }
+        }
+        // Check cookie as fallback
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.indexOf('perfaudit_rum_consent=true') === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Only initialize if consent is given
+    if (!hasConsent()) {
+        return;
+    }
+
     if (typeof window.webVitals !== 'undefined') {
         window.webVitals.onCLS(handleCLS);
         window.webVitals.onFCP(handleFCP);
@@ -69,9 +94,10 @@
         window.webVitals.onLCP(handleLCP);
         window.webVitals.onTTFB(handleTTFB);
     } else {
+        // Load web-vitals from local vendor directory
         (function() {
             const script = document.createElement('script');
-            script.src = 'https://unpkg.com/web-vitals@3/dist/web-vitals.attribution.iife.js';
+            script.src = PerfAuditPro.vendorUrl + 'web-vitals.attribution.iife.js';
             script.onload = function() {
                 if (window.webVitals) {
                     window.webVitals.onCLS(handleCLS);

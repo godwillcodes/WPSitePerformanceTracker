@@ -35,6 +35,9 @@ class PHP_Worker {
 
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
 
+        // First, reset any stuck audits (processing for more than 10 minutes)
+        self::reset_stuck_audits();
+
         // Get pending audits (limit to prevent timeout)
         $pending_audits = $wpdb->get_results(
             $wpdb->prepare(
@@ -52,6 +55,50 @@ class PHP_Worker {
         foreach ($pending_audits as $audit) {
             self::process_single_audit($audit);
         }
+    }
+
+    /**
+     * Reset stuck audits back to pending
+     *
+     * Audits stuck in "processing" state for more than 15 minutes are reset.
+     * This handles cases where the worker crashed or timed out.
+     *
+     * @return int Number of audits reset
+     */
+    private static function reset_stuck_audits(): int {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
+        $timeout_minutes = 15; // Reset audits stuck in processing for more than 15 minutes
+
+        // Reset audits that have been processing for more than the timeout period
+        // We check created_at as a proxy - if audit was created more than timeout ago and still processing, it's stuck
+        $result = $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE $table_name 
+                SET status = 'pending', worker_id = NULL 
+                WHERE status = 'processing' 
+                AND created_at < DATE_SUB(NOW(), INTERVAL %d MINUTE)
+                AND (completed_at IS NULL OR completed_at = '0000-00-00 00:00:00')",
+                $timeout_minutes
+            )
+        );
+
+        if ($result > 0) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::info('Reset stuck audits', array('count' => $result));
+        }
+
+        return (int) $result;
+    }
+
+    /**
+     * Public method to reset stuck audits (can be called manually)
+     *
+     * @return int Number of audits reset
+     */
+    public static function reset_stuck_audits_public(): int {
+        return self::reset_stuck_audits();
     }
 
     /**
@@ -159,7 +206,6 @@ class PHP_Worker {
         // Try PageSpeed Insights API first (free, no API key needed for basic usage)
         $api_key = get_option('perfaudit_pro_psi_api_key', '');
         
-        $device = isset($audit['device']) ? $audit['device'] : 'desktop';
         $strategy = $device === 'mobile' ? 'MOBILE' : 'DESKTOP';
         
         $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
@@ -174,14 +220,29 @@ class PHP_Worker {
         }
 
         $response = wp_remote_get($api_url, array(
-            'timeout' => 60,
+            'timeout' => 90, // Increased timeout for PageSpeed Insights API
             'headers' => array(
-                'User-Agent' => 'PerfAudit-Pro/1.0',
+                'User-Agent' => 'Site-Performance-Tracker/1.0',
             ),
         ));
 
         if (is_wp_error($response)) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::warning('PageSpeed Insights API error', array(
+                'url' => $url,
+                'error' => $response->get_error_message(),
+            ));
             // Fallback to alternative method
+            return self::run_fallback_audit($url);
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        if ($response_code !== 200) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::warning('PageSpeed Insights API returned error', array(
+                'url' => $url,
+                'code' => $response_code,
+            ));
             return self::run_fallback_audit($url);
         }
 
@@ -189,6 +250,11 @@ class PHP_Worker {
         $data = json_decode($body, true);
 
         if (!$data || !isset($data['lighthouseResult'])) {
+            require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/utils/class-logger.php';
+            \PerfAuditPro\Utils\Logger::warning('Invalid PageSpeed Insights response', array(
+                'url' => $url,
+                'has_data' => !empty($data),
+            ));
             return self::run_fallback_audit($url);
         }
 

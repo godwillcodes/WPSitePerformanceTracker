@@ -20,6 +20,14 @@ class Scorecard {
      * @return array
      */
     public static function get_scorecard() {
+        // Check cache first (5 minute cache)
+        $cache_key = 'perfaudit_scorecard';
+        $cached = get_transient($cache_key);
+        
+        if ($cached !== false) {
+            return $cached;
+        }
+
         require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/database/class-audit-repository.php';
         $repository = new \PerfAuditPro\Database\Audit_Repository();
 
@@ -52,7 +60,7 @@ class Scorecard {
         $grade = self::calculate_grade($avg_score);
         $trend = self::calculate_trend($scores);
 
-        return array(
+        $result = array(
             'grade' => $grade,
             'score' => round($avg_score, 1),
             'latest_score' => round($latest_score, 1),
@@ -60,6 +68,20 @@ class Scorecard {
             'status' => $avg_score >= 90 ? 'excellent' : ($avg_score >= 70 ? 'good' : ($avg_score >= 50 ? 'needs_improvement' : 'poor')),
             'audit_count' => count($completed_audits),
         );
+
+        // Cache for 5 minutes
+        set_transient($cache_key, $result, 5 * MINUTE_IN_SECONDS);
+
+        return $result;
+    }
+
+    /**
+     * Clear scorecard cache
+     *
+     * @return void
+     */
+    public static function clear_cache(): void {
+        delete_transient('perfaudit_scorecard');
     }
 
     /**

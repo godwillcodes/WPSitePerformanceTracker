@@ -36,9 +36,9 @@ class Schema {
     }
 
     /**
-     * Migrate tables to add missing columns
+     * Migrate tables to add missing columns and indexes
      *
-     * Adds columns that may have been added in schema updates.
+     * Adds columns and indexes that may have been added in schema updates.
      *
      * @return void
      */
@@ -56,6 +56,32 @@ class Schema {
         $columns = $wpdb->get_col("DESCRIBE $table_name");
         if (!in_array('device', $columns, true)) {
             $wpdb->query("ALTER TABLE $table_name ADD COLUMN device varchar(20) DEFAULT 'desktop' AFTER status");
+        }
+
+        // Add composite indexes for better query performance
+        $indexes = $wpdb->get_results("SHOW INDEX FROM $table_name WHERE Key_name = 'idx_status_created'");
+        if (empty($indexes)) {
+            $wpdb->query("ALTER TABLE $table_name ADD INDEX idx_status_created (status, created_at)");
+        }
+
+        $indexes = $wpdb->get_results("SHOW INDEX FROM $table_name WHERE Key_name = 'idx_url_status'");
+        if (empty($indexes)) {
+            $wpdb->query("ALTER TABLE $table_name ADD INDEX idx_url_status (url, status)");
+        }
+
+        // Add index on completed_at for filtering completed audits
+        $indexes = $wpdb->get_results("SHOW INDEX FROM $table_name WHERE Key_name = 'idx_completed_at'");
+        if (empty($indexes)) {
+            $wpdb->query("ALTER TABLE $table_name ADD INDEX idx_completed_at (completed_at)");
+        }
+
+        // Add indexes to RUM metrics table
+        $rum_table = $wpdb->prefix . 'perfaudit_rum_metrics';
+        if ($wpdb->get_var("SHOW TABLES LIKE '$rum_table'") === $rum_table) {
+            $rum_indexes = $wpdb->get_results("SHOW INDEX FROM $rum_table WHERE Key_name = 'idx_date_url'");
+            if (empty($rum_indexes)) {
+                $wpdb->query("ALTER TABLE $rum_table ADD INDEX idx_date_url (date, url)");
+            }
         }
     }
 

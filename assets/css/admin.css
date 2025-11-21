@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Google Fonts removed for WordPress.org compliance - using system fonts instead */
 
 :root {
     --color-primary: #2563eb;
@@ -31,7 +31,7 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: var(--spacing-xl) var(--spacing-lg);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
     color: var(--color-text);
     background: var(--color-bg-light);
     min-height: calc(100vh - 32px);
@@ -43,6 +43,29 @@
     margin: 0 0 var(--spacing-2xl) 0;
     color: var(--color-text);
     letter-spacing: -0.025em;
+}
+
+/* Loading skeleton animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.perfaudit-pro-loading-skeleton {
+    display: block;
+}
+
+.screen-reader-text {
+    clip: rect(1px, 1px, 1px, 1px);
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    word-wrap: normal !important;
 }
 
 .perfaudit-pro-grid {
@@ -168,72 +191,446 @@
 
 .perfaudit-pro-chart-container {
     position: relative;
-    height: 300px;
+    height: 320px;
     width: 100%;
-    background: var(--color-bg);
-    border-radius: var(--radius-sm);
-    padding: var(--spacing-md);
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    /* border: 1px solid #000000; */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-#create-audit-form {
+.perfaudit-pro-circular-progress-container {
     display: flex;
-    gap: var(--spacing-md);
-    align-items: flex-end;
-    margin-top: var(--spacing-lg);
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    min-height: 280px;
 }
 
-#create-audit-form label {
-    display: block;
-    margin-bottom: var(--spacing-sm);
+.perfaudit-pro-circular-progress {
+    width: 100%;
+    max-width: 280px;
+}
+
+.perfaudit-pro-circular-progress-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.perfaudit-pro-circular-progress-svg {
+    width: 100%;
+    height: auto;
+    transform: rotate(-90deg);
+}
+
+.perfaudit-pro-circular-progress-bg {
+    stroke: #e5e7eb;
+    fill: none;
+}
+
+.perfaudit-pro-circular-progress-fill {
+    fill: none;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.perfaudit-pro-circular-progress-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+}
+
+.perfaudit-pro-circular-progress-value {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-xs);
+    letter-spacing: -0.03em;
+}
+
+.perfaudit-pro-circular-progress-label {
+    font-size: 14px;
     font-weight: 500;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Score Distribution */
+.perfaudit-pro-score-distribution {
+    padding: var(--spacing-lg) 0;
+}
+
+.perfaudit-pro-score-distribution-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.perfaudit-pro-score-range-card {
+    background: var(--color-bg);
+    border: 1px solid #000000;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    transition: all 0.2s ease;
+}
+
+.perfaudit-pro-score-range-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.perfaudit-pro-score-range-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.perfaudit-pro-score-range-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.perfaudit-pro-score-range-icon {
+    font-size: 20px;
+    font-weight: 700;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+}
+
+.perfaudit-pro-score-range-title {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-xs);
+}
+
+.perfaudit-pro-score-range-value {
+    display: block;
+    font-size: 12px;
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+.perfaudit-pro-score-range-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+}
+
+.perfaudit-pro-score-range-count {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1;
+}
+
+.perfaudit-pro-score-range-percentage {
+    font-size: 13px;
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+.perfaudit-pro-score-range-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid #000000;
+}
+
+.perfaudit-pro-score-range-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-sm);
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Create New Audit Card */
+.perfaudit-pro-create-audit-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border: 1px solid #000000;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.perfaudit-pro-create-audit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+.perfaudit-pro-create-audit-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.perfaudit-pro-create-audit-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.perfaudit-pro-create-audit-title {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.03em;
+}
+
+.perfaudit-pro-create-audit-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-text-light);
+    line-height: 1.6;
+}
+
+.perfaudit-pro-create-audit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.perfaudit-pro-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.perfaudit-pro-form-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-weight: 600;
     font-size: 13px;
     color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-#create-audit-form input {
+.perfaudit-pro-form-label svg {
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.perfaudit-pro-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
     width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    color: var(--color-text);
-    transition: all 0.15s ease;
-    background: var(--color-bg);
 }
 
-#create-audit-form input:focus {
+.perfaudit-pro-form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #000000;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    line-height: 1.5;
+}
+
+.perfaudit-pro-form-input:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
 }
 
-#create-audit-form button {
-    padding: 10px 20px;
-    background: var(--color-primary);
-    border: none;
+.perfaudit-pro-form-input::placeholder {
+    color: var(--color-text-lighter);
+}
+
+.perfaudit-pro-input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-light);
+    pointer-events: none;
+    z-index: 1;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.perfaudit-pro-device-selector {
+    display: flex;
+    gap: var(--spacing-sm);
+    background: var(--color-bg-light);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    border: 1px solid #000000;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.perfaudit-pro-device-radio {
+    display: none;
+}
+
+.perfaudit-pro-device-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: 12px 16px;
     border-radius: var(--radius-sm);
-    color: white;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
-    font-family: 'Inter', sans-serif;
+    color: var(--color-text-light);
     cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: var(--shadow-sm);
-    white-space: nowrap;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: 2px solid transparent;
 }
 
-#create-audit-form button:hover {
-    background: var(--color-primary-dark);
-    box-shadow: var(--shadow-md);
+.perfaudit-pro-device-option svg {
+    flex-shrink: 0;
+    color: var(--color-text-lighter);
+    transition: color 0.2s ease;
 }
 
-#create-audit-form button:active {
-    transform: translateY(1px);
+.perfaudit-pro-device-radio:checked + .perfaudit-pro-device-option {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-#create-audit-message {
+.perfaudit-pro-device-radio:checked + .perfaudit-pro-device-option svg {
+    color: var(--color-primary);
+}
+
+.perfaudit-pro-device-option:hover {
+    color: var(--color-text);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.perfaudit-pro-create-audit-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: 16px 24px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    border: 1px solid #000000;
+    border-radius: var(--radius-md);
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.perfaudit-pro-create-audit-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, #1e3a8a 100%);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    transform: translateY(-2px);
+}
+
+.perfaudit-pro-create-audit-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.perfaudit-pro-create-audit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.perfaudit-pro-button-content,
+.perfaudit-pro-button-loader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.perfaudit-pro-button-loader svg {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.perfaudit-pro-create-audit-message {
     margin-top: var(--spacing-md);
+    padding: 0;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.perfaudit-pro-create-audit-message > div {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid #000000;
+}
+
+.perfaudit-pro-create-audit-message .notice-success {
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 4px solid #10b981;
+    color: #059669;
+}
+
+.perfaudit-pro-create-audit-message .notice-error {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid #ef4444;
+    color: #dc2626;
 }
 
 #recent-audits-table {
@@ -350,129 +747,519 @@
     font-weight: 500;
 }
 
-/* Scorecard Card */
-.perfaudit-pro-scorecard {
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-lg);
-    box-shadow: var(--shadow-sm);
+/* Modern Scorecard */
+.perfaudit-pro-scorecard-modern {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border: 1px solid #000000;
+    border-radius: var(--radius-lg);
+    padding: 0;
+    margin-bottom: var(--spacing-xl);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    position: relative;
 }
 
-.perfaudit-pro-scorecard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: var(--spacing-lg);
+.perfaudit-pro-scorecard-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--grade-color);
 }
 
-.perfaudit-pro-scorecard-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-text);
-    margin: 0 0 var(--spacing-md) 0;
-}
-
-.perfaudit-pro-scorecard-content {
+.perfaudit-pro-scorecard-modern-header {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border-light);
 }
 
-.perfaudit-pro-scorecard-grade {
-    font-size: 56px;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--color-text);
+.perfaudit-pro-scorecard-modern-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--grade-color) 0%, var(--grade-color) 100%);
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.perfaudit-pro-scorecard-details {
+.perfaudit-pro-scorecard-modern-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.perfaudit-pro-scorecard-modern-title-section {
     flex: 1;
 }
 
-.perfaudit-pro-scorecard-score {
-    font-size: 20px;
-    font-weight: 600;
+.perfaudit-pro-scorecard-modern-title {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: 22px;
+    font-weight: 700;
     color: var(--color-text);
-    margin-bottom: var(--spacing-xs);
+    letter-spacing: -0.03em;
 }
 
-.perfaudit-pro-scorecard-trend {
+.perfaudit-pro-scorecard-modern-subtitle {
+    margin: 0;
     font-size: 13px;
     color: var(--color-text-light);
-    margin-bottom: var(--spacing-xs);
+    font-weight: 400;
 }
 
-.perfaudit-pro-scorecard-count {
-    font-size: 12px;
-    color: var(--color-text-lighter);
-}
-
-/* Worker Status Card */
-.perfaudit-pro-worker-card {
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+.perfaudit-pro-scorecard-modern-body {
     padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-lg);
-    box-shadow: var(--shadow-sm);
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
 }
 
-.perfaudit-pro-worker-card h2 {
-    margin: 0 0 var(--spacing-md) 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.perfaudit-pro-worker-card p {
-    color: var(--color-text-light);
-    font-size: 14px;
-    margin-bottom: var(--spacing-md);
-    line-height: 1.6;
-}
-
-.perfaudit-pro-worker-actions {
+.perfaudit-pro-scorecard-modern-main {
     display: flex;
-    gap: var(--spacing-md);
     align-items: center;
+    gap: var(--spacing-2xl);
     flex-wrap: wrap;
 }
 
-.perfaudit-pro-worker-button {
-    padding: 10px 20px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg);
+.perfaudit-pro-scorecard-modern-grade-wrapper {
+    flex-shrink: 0;
+}
+
+.perfaudit-pro-scorecard-modern-grade-circle {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.perfaudit-pro-scorecard-modern-progress {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.perfaudit-pro-scorecard-modern-progress-bg {
+    stroke: #e5e7eb;
+}
+
+.perfaudit-pro-scorecard-modern-progress-fill {
+    stroke: var(--grade-color);
+    transition: stroke-dasharray 1s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.perfaudit-pro-scorecard-modern-grade-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.perfaudit-pro-scorecard-modern-grade-letter {
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--grade-color);
+    line-height: 1;
+    letter-spacing: -0.05em;
+}
+
+.perfaudit-pro-scorecard-modern-metrics {
+    flex: 1;
+    min-width: 250px;
+}
+
+.perfaudit-pro-scorecard-modern-score-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.perfaudit-pro-scorecard-modern-score-large {
+    font-size: 72px;
+    font-weight: 800;
     color: var(--color-text);
-    font-weight: 500;
+    line-height: 1;
+    margin-bottom: var(--spacing-xs);
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, var(--color-text) 0%, var(--color-text-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.perfaudit-pro-scorecard-modern-score-label {
     font-size: 14px;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    color: var(--color-text-light);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
-.perfaudit-pro-worker-button:hover {
-    background: var(--color-bg-light);
-    border-color: var(--color-primary);
-    color: var(--color-primary);
+.perfaudit-pro-scorecard-modern-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
 }
 
-.perfaudit-pro-worker-button.primary {
-    background: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
+.perfaudit-pro-scorecard-modern-trend-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    width: fit-content;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.perfaudit-pro-worker-button.primary:hover {
-    background: var(--color-primary-dark);
-    border-color: var(--color-primary-dark);
+.perfaudit-pro-scorecard-modern-trend-badge[data-trend="improving"] {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
-.perfaudit-pro-worker-status {
+.perfaudit-pro-scorecard-modern-trend-badge[data-trend="declining"] {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.perfaudit-pro-scorecard-modern-trend-badge[data-trend="stable"] {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.perfaudit-pro-scorecard-modern-trend-badge svg {
+    flex-shrink: 0;
+}
+
+.perfaudit-pro-scorecard-modern-count {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
     font-size: 13px;
     color: var(--color-text-light);
-    margin-left: var(--spacing-md);
+    padding: 8px 14px;
+    background: var(--color-bg-light);
+    border-radius: var(--radius-md);
+    border: 1px solid #000000;
+    width: fit-content;
+    font-weight: 500;
+}
+
+.perfaudit-pro-scorecard-modern-count svg {
+    flex-shrink: 0;
+    color: var(--color-text-lighter);
+}
+
+/* Modern Worker Card */
+.perfaudit-pro-worker-card-modern {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border: 1px solid #000000;
+    border-radius: var(--radius-lg);
+    padding: 0;
+    margin-bottom: var(--spacing-xl);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.perfaudit-pro-worker-card-modern-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.perfaudit-pro-worker-card-modern-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.perfaudit-pro-worker-card-modern-title {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+}
+
+.perfaudit-pro-worker-card-modern-subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-text-light);
+    font-weight: 400;
+}
+
+.perfaudit-pro-worker-modern-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl);
+    background: var(--color-bg);
+}
+
+.perfaudit-pro-worker-modern-info-item {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid #000000;
+    border-left: 4px solid var(--color-primary);
+    transition: all 0.2s ease;
+}
+
+.perfaudit-pro-worker-modern-info-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.perfaudit-pro-worker-modern-info-icon {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: var(--radius-sm);
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--color-primary);
+    padding: 6px;
+    flex-shrink: 0;
+}
+
+.perfaudit-pro-worker-modern-info-item strong {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.perfaudit-pro-worker-modern-info-item p {
+    margin: 0;
+    color: var(--color-text-light);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.perfaudit-pro-worker-modern-status-section {
+    padding: 0 var(--spacing-xl) var(--spacing-xl);
+    background: var(--color-bg);
+}
+
+.perfaudit-pro-worker-modern-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--color-bg-light);
+    border: 1px solid #000000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.perfaudit-pro-worker-modern-status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    background: #9ca3af;
+    box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.2);
+}
+
+.perfaudit-pro-worker-modern-status-badge.running .perfaudit-pro-worker-modern-status-dot {
+    background: var(--color-success);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    animation: pulse-status 2s ease-in-out infinite;
+}
+
+.perfaudit-pro-worker-modern-status-badge.stopped .perfaudit-pro-worker-modern-status-dot {
+    background: #9ca3af;
+    animation: none;
+}
+
+@keyframes pulse-status {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+.perfaudit-pro-worker-modern-status-text {
+    color: var(--color-text);
+}
+
+.perfaudit-pro-worker-modern-controls {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-xl) var(--spacing-xl);
+    background: var(--color-bg);
+}
+
+.perfaudit-pro-worker-modern-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: 12px 24px;
+    border: 1px solid #000000;
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.perfaudit-pro-worker-modern-button:hover {
+    background: var(--color-bg-light);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.perfaudit-pro-worker-modern-button-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    border-color: #000000;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.perfaudit-pro-worker-modern-button-primary:hover {
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, #1e3a8a 100%);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    transform: translateY(-2px);
+}
+
+.perfaudit-pro-worker-modern-button-secondary {
+    background: var(--color-bg);
+    color: var(--color-error);
+    border-color: #000000;
+}
+
+.perfaudit-pro-worker-modern-button-secondary:hover {
+    background: var(--color-error);
+    color: white;
+    border-color: #000000;
+}
+
+.perfaudit-pro-worker-modern-button svg {
+    flex-shrink: 0;
+}
+
+.perfaudit-pro-worker-modern-actions {
+    padding: var(--spacing-xl);
+    background: var(--color-bg-light);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.perfaudit-pro-worker-modern-actions-title {
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+}
+
+.perfaudit-pro-worker-modern-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.perfaudit-pro-worker-modern-action-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--color-bg);
+    border: 1px solid #000000;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.perfaudit-pro-worker-modern-action-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.perfaudit-pro-worker-modern-action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 10px 16px;
+    border: 1px solid #000000;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-light);
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: fit-content;
+}
+
+.perfaudit-pro-worker-modern-action-button:hover {
+    background: var(--color-primary);
+    color: white;
+    border-color: #000000;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.perfaudit-pro-worker-modern-action-button svg {
+    flex-shrink: 0;
+}
+
+.perfaudit-pro-worker-modern-action-content {
+    flex: 1;
+}
+
+.perfaudit-pro-worker-modern-action-content strong {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.perfaudit-pro-worker-modern-action-content p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-text-light);
+    line-height: 1.5;
 }
 
 .perfaudit-pro-worker-message {
@@ -484,4 +1271,41 @@
     font-size: 13px;
     color: var(--color-text-light);
     display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .perfaudit-pro-scorecard-modern-main {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .perfaudit-pro-scorecard-modern-grade-circle {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .perfaudit-pro-scorecard-modern-metrics {
+        width: 100%;
+    }
+    
+    .perfaudit-pro-worker-modern-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .perfaudit-pro-worker-modern-controls {
+        flex-direction: column;
+    }
+    
+    .perfaudit-pro-worker-modern-button {
+        width: 100%;
+    }
+    
+    .perfaudit-pro-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .perfaudit-pro-chart-container {
+        height: 280px;
+    }
 }

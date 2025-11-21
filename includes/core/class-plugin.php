@@ -77,6 +77,7 @@ class Plugin {
         \PerfAuditPro\Admin\Audit_Details::init();
         \PerfAuditPro\Admin\Performance_Budgets::init();
         \PerfAuditPro\Worker\PHP_Worker::init();
+        \PerfAuditPro\Utils\Data_Cleanup::init();
     }
 
     /**

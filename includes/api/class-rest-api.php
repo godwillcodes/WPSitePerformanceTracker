@@ -338,11 +338,20 @@ class Rest_API {
             return $audit_id;
         }
 
+        // Try to process immediately if worker is running
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/worker/class-php-worker.php';
+        if (\PerfAuditPro\Worker\PHP_Worker::is_running()) {
+            // Spawn async processing to avoid blocking the response
+            spawn_cron();
+            // Also trigger processing in background
+            wp_schedule_single_event(time() + 1, 'perfaudit_pro_process_audits');
+        }
+
         return new \WP_REST_Response(array(
             'success' => true,
             'audit_id' => $audit_id,
             'status' => 'pending',
-            'message' => 'Audit created. The built-in PHP worker will process it automatically when running.',
+            'message' => 'Audit created. Processing will start automatically if worker is running.',
         ), 201);
     }
 
