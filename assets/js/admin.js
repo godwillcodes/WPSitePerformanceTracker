@@ -9,6 +9,9 @@
             method: 'GET',
             beforeSend: function(xhr) {
                 xhr.setRequestHeader('X-WP-Nonce', PerfAuditPro.nonce);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching audit results:', error, xhr.responseText);
             }
         });
     }
@@ -19,6 +22,9 @@
             method: 'GET',
             beforeSend: function(xhr) {
                 xhr.setRequestHeader('X-WP-Nonce', PerfAuditPro.nonce);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching RUM metrics:', error, xhr.responseText);
             }
         });
     }
@@ -26,6 +32,11 @@
     function renderAuditTimelineChart(data) {
         const ctx = document.getElementById('audit-timeline-chart');
         if (!ctx) return;
+
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No audit data available yet.</p>';
+            return;
+        }
 
         const labels = data.map(item => new Date(item.created_at).toLocaleDateString());
         const scores = data.map(item => parseFloat(item.performance_score) || 0);
@@ -59,7 +70,17 @@
         const ctx = document.getElementById('score-distribution-chart');
         if (!ctx) return;
 
-        const scores = data.map(item => parseFloat(item.performance_score) || 0);
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No audit data available yet.</p>';
+            return;
+        }
+
+        const scores = data.map(item => parseFloat(item.performance_score) || 0).filter(score => score > 0);
+        if (scores.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No completed audits with scores yet.</p>';
+            return;
+        }
+
         const ranges = {
             '0-50': 0,
             '50-70': 0,
@@ -99,6 +120,11 @@
         const ctx = document.getElementById('rum-lcp-chart');
         if (!ctx) return;
 
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No RUM data available yet. Metrics will appear as users visit your site.</p>';
+            return;
+        }
+
         const labels = data.map(item => item.date);
         const avgLCP = data.map(item => parseFloat(item.avg_lcp) || 0);
         const p75LCP = data.map(item => parseFloat(item.p75_lcp) || 0);
@@ -134,6 +160,11 @@
     function renderRUMCLSChart(data) {
         const ctx = document.getElementById('rum-cls-chart');
         if (!ctx) return;
+
+        if (!data || data.length === 0) {
+            ctx.parentElement.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No RUM data available yet. Metrics will appear as users visit your site.</p>';
+            return;
+        }
 
         const labels = data.map(item => item.date);
         const avgCLS = data.map(item => parseFloat(item.avg_cls) || 0);
@@ -201,21 +232,39 @@
 
     $(document).ready(function() {
         $.when(fetchAuditResults(), fetchRUMMetrics()).done(function(auditResponse, rumResponse) {
-            const auditData = auditResponse[0] || [];
-            const rumData = rumResponse[0] || [];
-
-            if (auditData.length > 0) {
-                renderAuditTimelineChart(auditData);
-                renderScoreDistributionChart(auditData);
-                renderRecentAuditsTable(auditData);
+            // jQuery $.when with $.ajax returns [data, textStatus, jqXHR]
+            // WordPress REST API returns JSON array directly
+            let auditData = [];
+            let rumData = [];
+            
+            if (auditResponse && auditResponse.length > 0) {
+                auditData = Array.isArray(auditResponse[0]) ? auditResponse[0] : auditResponse[0];
+            }
+            
+            if (rumResponse && rumResponse.length > 0) {
+                rumData = Array.isArray(rumResponse[0]) ? rumResponse[0] : rumResponse[0];
             }
 
-            if (rumData.length > 0) {
-                renderRUMLCPChart(rumData);
-                renderRUMCLSChart(rumData);
+            // Always render charts, they'll show empty state if no data
+            renderAuditTimelineChart(auditData);
+            renderScoreDistributionChart(auditData);
+            renderRecentAuditsTable(auditData);
+            renderRUMLCPChart(rumData);
+            renderRUMCLSChart(rumData);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('Failed to load audit data:', textStatus, errorThrown, jqXHR);
+            const container = document.getElementById('recent-audits-table');
+            if (container) {
+                let errorMsg = 'Error loading data. ';
+                if (jqXHR.status === 403) {
+                    errorMsg += 'Permission denied. Please refresh the page.';
+                } else if (jqXHR.status === 404) {
+                    errorMsg += 'API endpoint not found.';
+                } else {
+                    errorMsg += 'Please check the browser console for details.';
+                }
+                container.innerHTML = '<p style="color: #d63638; padding: 20px;">' + errorMsg + '</p>';
             }
-        }).fail(function() {
-            console.error('Failed to load audit data');
         });
     });
 })(jQuery);
