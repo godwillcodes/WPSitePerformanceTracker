@@ -19,9 +19,10 @@ class Audit_Repository {
      *
      * @param string $url URL to audit
      * @param string $audit_type Type of audit
+     * @param string $device Device type (desktop/mobile)
      * @return int|\WP_Error Audit ID or error
      */
-    public function create_synthetic_audit($url, $audit_type = 'lighthouse') {
+    public function create_synthetic_audit($url, $audit_type = 'lighthouse', $device = 'desktop') {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
