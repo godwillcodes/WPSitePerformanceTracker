@@ -121,10 +121,17 @@ class Rest_API {
             return new \WP_Error('invalid_metrics', 'Metrics must be an object', array('status' => 400));
         }
 
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/security/class-sanitizer.php';
+        $sanitized_metrics = \PerfAuditPro\Security\Sanitizer::sanitize_metrics($metrics);
+
+        if (empty($sanitized_metrics)) {
+            return new \WP_Error('invalid_metrics', 'No valid metrics provided', array('status' => 400));
+        }
+
         require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/database/class-rum-repository.php';
         $repository = new \PerfAuditPro\Database\RUM_Repository();
 
-        $result = $repository->add_metric($url, $metrics);
+        $result = $repository->add_metric($url, $sanitized_metrics);
 
         if (is_wp_error($result)) {
             return $result;
@@ -147,7 +154,11 @@ class Rest_API {
         $repository = new \PerfAuditPro\Database\Audit_Repository();
 
         $url = $request->get_param('url');
+        if ($url) {
+            $url = sanitize_url($url);
+        }
         $limit = absint($request->get_param('limit')) ?: 10;
+        $limit = min($limit, 100);
 
         $results = $repository->get_recent_audits($url, $limit);
 
@@ -165,7 +176,11 @@ class Rest_API {
         $repository = new \PerfAuditPro\Database\RUM_Repository();
 
         $url = $request->get_param('url');
+        if ($url) {
+            $url = sanitize_url($url);
+        }
         $days = absint($request->get_param('days')) ?: 30;
+        $days = min($days, 365);
 
         $metrics = $repository->get_aggregated_metrics($url, $days);
 
@@ -236,7 +251,13 @@ class Rest_API {
      * @return bool
      */
     private static function check_rate_limit($endpoint) {
-        $transient_key = 'perfaudit_rate_limit_' . $endpoint . '_' . $_SERVER['REMOTE_ADDR'];
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/security/class-sanitizer.php';
+        
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+        $ip = \PerfAuditPro\Security\Sanitizer::sanitize_ip($ip);
+        $endpoint = sanitize_key($endpoint);
+        
+        $transient_key = 'perfaudit_rate_limit_' . $endpoint . '_' . $ip;
         $count = get_transient($transient_key);
 
         if ($count === false) {

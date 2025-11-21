@@ -173,10 +173,12 @@ class RUM_Repository {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'perfaudit_rum_metrics';
+        $days = absint($days);
         $start_date = date('Y-m-d', strtotime("-{$days} days"));
 
         $where = $wpdb->prepare(' WHERE date >= %s', $start_date);
         if ($url) {
+            $url = sanitize_url($url);
             $where .= $wpdb->prepare(' AND url = %s', $url);
         }
 

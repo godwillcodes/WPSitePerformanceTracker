@@ -126,13 +126,21 @@ class Audit_Repository {
     public function store_lighthouse_json($audit_id, $json) {
         global $wpdb;
 
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/security/class-sanitizer.php';
+        $sanitized_json = \PerfAuditPro\Security\Sanitizer::sanitize_json($json);
+
+        if ($sanitized_json === false) {
+            return new \WP_Error('invalid_json', 'Invalid JSON format', array('status' => 400));
+        }
+
         $table_name = $wpdb->prefix . 'perfaudit_lighthouse_json';
+        $audit_id = absint($audit_id);
 
         $result = $wpdb->insert(
             $table_name,
             array(
                 'audit_id' => $audit_id,
-                'full_json' => $json,
+                'full_json' => $sanitized_json,
             ),
             array('%d', '%s')
         );
@@ -155,14 +163,18 @@ class Audit_Repository {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
+        $limit = absint($limit);
 
         $where = '';
         if ($url) {
+            $url = sanitize_url($url);
             $where = $wpdb->prepare(' WHERE url = %s', $url);
         }
 
-        $query = "SELECT * FROM $table_name $where ORDER BY created_at DESC LIMIT %d";
-        $query = $wpdb->prepare($query, $limit);
+        $query = $wpdb->prepare(
+            "SELECT * FROM $table_name $where ORDER BY created_at DESC LIMIT %d",
+            $limit
+        );
 
         return $wpdb->get_results($query, ARRAY_A);
     }
