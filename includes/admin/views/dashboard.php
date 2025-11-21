@@ -30,31 +30,51 @@ if (!defined('ABSPATH')) {
 
     <div class="perfaudit-pro-grid">
         <div class="perfaudit-pro-card">
-            <h2><?php esc_html_e('Synthetic Audits', 'perfaudit-pro'); ?></h2>
+            <h2>📈 Synthetic Audits Timeline</h2>
+            <div class="perfaudit-pro-explanation">
+                <strong>No cap:</strong> This shows your performance scores over time. If it's going up, you're winning. If it's going down... well, we need to talk. Think of it as your site's report card but make it visual.
+            </div>
+            <div id="audit-timeline-status"></div>
             <div class="perfaudit-pro-chart-container">
                 <canvas id="audit-timeline-chart"></canvas>
             </div>
+            <div id="audit-timeline-recommendations"></div>
         </div>
 
         <div class="perfaudit-pro-card">
-            <h2><?php esc_html_e('Performance Score Distribution', 'perfaudit-pro'); ?></h2>
+            <h2>🥧 Performance Score Distribution</h2>
+            <div class="perfaudit-pro-explanation">
+                <strong>Real talk:</strong> This pie chart shows where your audits are landing. Green = you're slaying. Yellow = meh, could be better. Red = yikes, we need to fix this ASAP. Most of your pie should be green, periodt.
+            </div>
+            <div id="score-distribution-status"></div>
             <div class="perfaudit-pro-chart-container">
                 <canvas id="score-distribution-chart"></canvas>
             </div>
+            <div id="score-distribution-recommendations"></div>
         </div>
 
         <div class="perfaudit-pro-card">
-            <h2><?php esc_html_e('RUM Metrics - LCP', 'perfaudit-pro'); ?></h2>
+            <h2>⚡ RUM Metrics - LCP (Largest Contentful Paint)</h2>
+            <div class="perfaudit-pro-explanation">
+                <strong>Spill the tea:</strong> LCP measures how fast your main content loads. Under 2.5s = chef's kiss 👌. 2.5-4s = it's giving slow. Over 4s = your users are probably already gone. This is real user data, so it hits different.
+            </div>
+            <div id="rum-lcp-status"></div>
             <div class="perfaudit-pro-chart-container">
                 <canvas id="rum-lcp-chart"></canvas>
             </div>
+            <div id="rum-lcp-recommendations"></div>
         </div>
 
         <div class="perfaudit-pro-card">
-            <h2><?php esc_html_e('RUM Metrics - CLS', 'perfaudit-pro'); ?></h2>
+            <h2>🎨 RUM Metrics - CLS (Cumulative Layout Shift)</h2>
+            <div class="perfaudit-pro-explanation">
+                <strong>Fr fr:</strong> CLS measures if your page is jumping around while loading. Under 0.1 = smooth like butter. 0.1-0.25 = a bit janky. Over 0.25 = your layout is having a whole identity crisis. Nobody likes a page that can't commit to a layout.
+            </div>
+            <div id="rum-cls-status"></div>
             <div class="perfaudit-pro-chart-container">
                 <canvas id="rum-cls-chart"></canvas>
             </div>
+            <div id="rum-cls-recommendations"></div>
         </div>
     </div>
 
