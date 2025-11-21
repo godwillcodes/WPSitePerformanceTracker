@@ -13,6 +13,23 @@ if (!defined('ABSPATH')) {
 <div class="wrap perfaudit-pro-dashboard">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
 
+    <div class="perfaudit-pro-card" style="margin-bottom: 20px; background: linear-gradient(135deg, #007BFF 0%, #0056b3 100%); color: white; border: none;">
+        <h2 style="color: white; margin-top: 0;">🤖 Worker Status</h2>
+        <div id="worker-status-container">
+            <p style="margin-bottom: 16px; opacity: 0.9;">The worker processes Lighthouse audits automatically. Click to start/stop.</p>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button id="worker-start-btn" class="button" style="background: white; color: #007BFF; border: none; font-weight: 600; padding: 10px 24px;">
+                    ▶ Start Worker
+                </button>
+                <button id="worker-stop-btn" class="button" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); font-weight: 600; padding: 10px 24px; display: none;">
+                    ⏹ Stop Worker
+                </button>
+                <span id="worker-status-text" style="margin-left: 12px; font-weight: 500;"></span>
+            </div>
+            <div id="worker-message" style="margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; display: none;"></div>
+        </div>
+    </div>
+
     <div class="perfaudit-pro-card" style="margin-bottom: 20px;">
         <h2><?php esc_html_e('Create New Audit', 'perfaudit-pro'); ?></h2>
         <p><?php esc_html_e('Create a new synthetic audit. Note: You need an external worker to process audits. See WORKER_SETUP.md for details.', 'perfaudit-pro'); ?></p>

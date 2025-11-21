@@ -73,6 +73,8 @@ class Admin_Page {
         wp_localize_script('perfaudit-pro-admin', 'perfauditPro', array(
             'apiUrl' => rest_url('perfaudit-pro/v1/'),
             'nonce' => wp_create_nonce('wp_rest'),
+            'workerNonce' => wp_create_nonce('perfaudit_worker'),
+            'ajaxUrl' => admin_url('admin-ajax.php'),
         ));
     }
 

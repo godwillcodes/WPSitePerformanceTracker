@@ -477,8 +477,99 @@
         });
     }
 
+    function checkWorkerStatus() {
+        $.ajax({
+            url: PerfAuditPro.ajaxUrl,
+            method: 'POST',
+            data: {
+                action: 'perfaudit_check_worker',
+                nonce: PerfAuditPro.workerNonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    const status = response.data.status;
+                    const nodeAvailable = response.data.node_available;
+                    
+                    if (status === 'running') {
+                        $('#worker-start-btn').hide();
+                        $('#worker-stop-btn').show();
+                        $('#worker-status-text').text('🟢 Running').css('color', '#10b981');
+                    } else {
+                        $('#worker-start-btn').show();
+                        $('#worker-stop-btn').hide();
+                        $('#worker-status-text').text('⚪ Stopped').css('color', '#64748b');
+                    }
+                    
+                    if (!nodeAvailable) {
+                        $('#worker-message').html('<strong>⚠️ ' + response.data.node_message + '</strong>').show();
+                        $('#worker-start-btn').prop('disabled', true);
+                    } else {
+                        $('#worker-message').hide();
+                        $('#worker-start-btn').prop('disabled', false);
+                    }
+                }
+            }
+        });
+    }
+
+    function startWorker() {
+        $('#worker-start-btn').prop('disabled', true).text('Starting...');
+        
+        $.ajax({
+            url: PerfAuditPro.ajaxUrl,
+            method: 'POST',
+            data: {
+                action: 'perfaudit_start_worker',
+                nonce: PerfAuditPro.workerNonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#worker-message').html('<strong>✅ ' + response.data.message + '</strong>').css('background', 'rgba(16, 185, 129, 0.2)').show();
+                    setTimeout(checkWorkerStatus, 1000);
+                } else {
+                    $('#worker-message').html('<strong>❌ ' + response.data.message + '</strong>').css('background', 'rgba(239, 68, 68, 0.2)').show();
+                    $('#worker-start-btn').prop('disabled', false).text('▶ Start Worker');
+                }
+            },
+            error: function() {
+                $('#worker-message').html('<strong>❌ Failed to start worker</strong>').css('background', 'rgba(239, 68, 68, 0.2)').show();
+                $('#worker-start-btn').prop('disabled', false).text('▶ Start Worker');
+            }
+        });
+    }
+
+    function stopWorker() {
+        $('#worker-stop-btn').prop('disabled', true).text('Stopping...');
+        
+        $.ajax({
+            url: PerfAuditPro.ajaxUrl,
+            method: 'POST',
+            data: {
+                action: 'perfaudit_stop_worker',
+                nonce: PerfAuditPro.workerNonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#worker-message').html('<strong>✅ ' + response.data.message + '</strong>').css('background', 'rgba(16, 185, 129, 0.2)').show();
+                    setTimeout(checkWorkerStatus, 1000);
+                } else {
+                    $('#worker-message').html('<strong>❌ ' + response.data.message + '</strong>').css('background', 'rgba(239, 68, 68, 0.2)').show();
+                }
+                $('#worker-stop-btn').prop('disabled', false).text('⏹ Stop Worker');
+            }
+        });
+    }
+
     $(document).ready(function() {
         console.log('PerfAudit Pro: Initializing dashboard...', PerfAuditPro);
+
+        // Worker management
+        $('#worker-start-btn').on('click', startWorker);
+        $('#worker-stop-btn').on('click', stopWorker);
+        
+        // Check worker status on load and every 5 seconds
+        checkWorkerStatus();
+        setInterval(checkWorkerStatus, 5000);
 
         // Handle create audit form
         $('#create-audit-form').on('submit', function(e) {

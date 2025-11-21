@@ -38,6 +38,16 @@ class Activator {
         if (!get_option('perfaudit_pro_version')) {
             add_option('perfaudit_pro_version', PERFAUDIT_PRO_VERSION);
         }
+
+        // Auto-generate API token if not exists
+        if (!get_option('perfaudit_pro_api_token')) {
+            $token = bin2hex(random_bytes(32));
+            add_option('perfaudit_pro_api_token', $token);
+        }
+
+        // Auto-configure worker
+        require_once PERFAUDIT_PRO_PLUGIN_DIR . 'includes/admin/class-worker-manager.php';
+        \PerfAuditPro\Admin\Worker_Manager::auto_configure();
     }
 }
 
