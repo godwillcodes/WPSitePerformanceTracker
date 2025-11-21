@@ -4,6 +4,19 @@ This is the built-in worker for processing Lighthouse audits. It runs as a separ
 
 ## Quick Start
 
+### Option 1: Automated Setup (Recommended)
+```bash
+cd worker
+./setup.sh
+```
+
+Then edit `.env` with your configuration and run:
+```bash
+npm start
+```
+
+### Option 2: Manual Setup
+
 1. **Install Dependencies**
    ```bash
    cd worker
