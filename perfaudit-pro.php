@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: PerfAudit Pro
- * Plugin URI: https://example.com/perfaudit-pro
+ * Plugin URI: https://github.com/godwillcodes/PerfAuditPro
  * Description: Automated website performance audits using synthetic lab audits and Real User Monitoring
  * Version: 1.0.0
  * Author: PerfAudit Pro Team
- * Author URI: https://example.com
+ * Author URI: https://github.com/godwillcodes/PerfAuditPro
  * License: Proprietary
  * Text Domain: perfaudit-pro
  * Domain Path: /languages

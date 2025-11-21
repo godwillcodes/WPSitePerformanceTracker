@@ -2,6 +2,8 @@
 
 A WordPress performance governance plugin that performs automated website performance audits using synthetic lab audits (Lighthouse/Puppeteer) and Real User Monitoring (RUM) using web-vitals.
 
+**Repository**: [https://github.com/godwillcodes/PerfAuditPro](https://github.com/godwillcodes/PerfAuditPro)
+
 ## Features
 
 - **Synthetic Lab Audits**: Automated Lighthouse/Puppeteer-based performance testing
