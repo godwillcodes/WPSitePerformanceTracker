@@ -57,6 +57,7 @@ class Plugin {
         \PerfAuditPro\API\Rest_API::init();
         \PerfAuditPro\Cron\Scheduler::init();
         \PerfAuditPro\Frontend\RUM_Enqueue::init();
+        \PerfAuditPro\Admin\Admin_Page::init();
     }
 
     /**
