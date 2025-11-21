@@ -105,6 +105,28 @@ class Rest_API {
                 ),
             ),
         ));
+
+        register_rest_route('perfaudit-pro/v1', '/pending-audits', array(
+            'methods' => 'GET',
+            'callback' => array(__CLASS__, 'get_pending_audits'),
+            'permission_callback' => array(__CLASS__, 'check_token_auth'),
+        ));
+
+        register_rest_route('perfaudit-pro/v1', '/mark-processing', array(
+            'methods' => 'POST',
+            'callback' => array(__CLASS__, 'handle_mark_processing'),
+            'permission_callback' => array(__CLASS__, 'check_token_auth'),
+            'args' => array(
+                'audit_id' => array(
+                    'required' => true,
+                    'type' => 'integer',
+                ),
+                'worker_id' => array(
+                    'required' => true,
+                    'type' => 'string',
+                ),
+            ),
+        ));
     }
 
     /**
@@ -277,8 +299,74 @@ class Rest_API {
             'success' => true,
             'audit_id' => $audit_id,
             'status' => 'pending',
-            'message' => 'Audit created. An external worker will process it. See WORKER_SETUP.md for details.',
+            'message' => 'Audit created. An external worker will process it. See worker/README.md for details.',
         ), 201);
+    }
+
+    /**
+     * Get pending audits for worker
+     *
+     * @param \WP_REST_Request $request Request object
+     * @return \WP_REST_Response
+     */
+    public static function get_pending_audits($request) {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
+        $limit = absint($request->get_param('limit')) ?: 10;
+
+        $query = $wpdb->prepare(
+            "SELECT id, url, audit_type, created_at FROM $table_name WHERE status = %s ORDER BY created_at ASC LIMIT %d",
+            'pending',
+            $limit
+        );
+
+        $audits = $wpdb->get_results($query, ARRAY_A);
+
+        return new \WP_REST_Response($audits, 200);
+    }
+
+    /**
+     * Mark audit as processing
+     *
+     * @param \WP_REST_Request $request Request object
+     * @return \WP_REST_Response|\WP_Error
+     */
+    public static function handle_mark_processing($request) {
+        global $wpdb;
+
+        $audit_id = absint($request->get_param('audit_id'));
+        $worker_id = sanitize_text_field($request->get_param('worker_id'));
+
+        $table_name = $wpdb->prefix . 'perfaudit_synthetic_audits';
+
+        // Try to update only if status is still pending (prevent race conditions)
+        $result = $wpdb->update(
+            $table_name,
+            array(
+                'status' => 'processing',
+                'worker_id' => $worker_id,
+            ),
+            array(
+                'id' => $audit_id,
+                'status' => 'pending',
+            ),
+            array('%s', '%s'),
+            array('%d', '%s')
+        );
+
+        if ($result === false) {
+            return new \WP_Error('db_error', 'Failed to update audit status', array('status' => 500));
+        }
+
+        if ($result === 0) {
+            return new \WP_Error('already_processing', 'Audit is already being processed by another worker', array('status' => 409));
+        }
+
+        return new \WP_REST_Response(array(
+            'success' => true,
+            'message' => 'Audit marked as processing',
+        ), 200);
     }
 
     /**

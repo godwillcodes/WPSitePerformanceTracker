@@ -1,0 +1,25 @@
+{
+  "name": "perfaudit-pro-worker",
+  "version": "1.0.0",
+  "description": "External worker for PerfAudit Pro - processes Lighthouse audits",
+  "main": "worker.js",
+  "scripts": {
+    "start": "node worker.js",
+    "dev": "node worker.js --dev"
+  },
+  "keywords": [
+    "lighthouse",
+    "performance",
+    "audit",
+    "wordpress"
+  ],
+  "author": "",
+  "license": "Proprietary",
+  "dependencies": {
+    "lighthouse": "^11.0.0",
+    "chrome-launcher": "^1.0.0",
+    "node-fetch": "^2.7.0",
+    "dotenv": "^16.3.1"
+  }
+}
+

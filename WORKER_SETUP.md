@@ -1,6 +1,38 @@
-# External Worker Setup Guide
+# Worker Setup Guide
 
-PerfAudit Pro is designed to work with an external worker that performs synthetic audits using Lighthouse/Puppeteer. This document explains how to integrate an external worker with the plugin.
+PerfAudit Pro includes a built-in worker in the `worker/` directory that processes Lighthouse audits. You can use this worker or build your own.
+
+## Quick Start (Built-in Worker)
+
+The easiest way to get started is using the built-in worker:
+
+1. **Navigate to worker directory**
+   ```bash
+   cd worker
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your WordPress URL and API token
+   ```
+
+4. **Set API token in WordPress**
+   ```php
+   update_option('perfaudit_pro_api_token', 'your-secure-token-here');
+   ```
+
+5. **Run the worker**
+   ```bash
+   npm start
+   ```
+
+See `worker/README.md` for detailed setup instructions.
 
 ## Architecture
 
